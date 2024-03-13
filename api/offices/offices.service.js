@@ -95,8 +95,7 @@ function parseOfficeResponse(x){
 
 module.exports = {
     create :(req, callback) => {
-            var data = req.body;
-            
+            var data = req.body;            
             var sql = `${officeSql} where o.email = ? and o.companyId = ?`;
             var fields = [data.email, data.companyId];
             pool.query(sql, fields, (error, results, fields)=>{
@@ -107,39 +106,67 @@ module.exports = {
                 }
                 else{
                     var length = results.length;
-                    if(length > 0){
-                        return callback("office already exists with same email");
-                    }
-                    else{
-                        pool.query(`insert into offices (name, email, contact, country, state, city, postalCode, address, timezone, startDate, endDate, companyId) values (?,?,?,?,?,?,?,?,?,?,?,?)`,
-                        [data.name, data.email, data.contact, data.country, data.state, data.city, data.postalCode, data.address, data.timezone, data.startDate, data.endDate, data.companyId], 
-                        (error, results, fields)=> {
-                           if(error)
-                            {
-                                console.log(error);
-                                return callback(error);
-                            }
-                            else{
-                                fields = [data.email, data.companyId];
-                                pool.query(sql, fields, (error, results, fields)=>{
-                                    if(error)
-                                    {
-                                        console.log(error);
-                                        return callback(error);
+                    pool.query(`insert into offices (name, email, contact, country, state, city, postalCode, address, timezone, startDate, endDate, companyId) values (?,?,?,?,?,?,?,?,?,?,?,?)`,
+                    [data.name, data.email, data.contact, data.country, data.state, data.city, data.postalCode, data.address, data.timezone, data.startDate, data.endDate, data.companyId], 
+                    (error, results, fields)=> {
+                       if(error)
+                        {
+                            console.log(error);
+                            return callback(error);
+                        }
+                        else{
+                            fields = [data.email, data.companyId];
+                            pool.query(sql, fields, (error, results, fields)=>{
+                                if(error)
+                                {
+                                    console.log(error);
+                                    return callback(error);
+                                }
+                                else{
+                                    length = results.length;
+                                    if(length > 0){
+                                        return callback(null, parseOfficeResponse(results[0]));
                                     }
                                     else{
-                                        length = results.length;
-                                        if(length > 0){
-                                            return callback(null, parseOfficeResponse(results[0]));
-                                        }
-                                        else{
-                                            return callback(null, "failed to get office details");
-                                        }
+                                        return callback(null, "failed to get office details");
                                     }
-                                });
-                            }
-                        });
-                    }
+                                }
+                            });
+                        }
+                    });
+                    // if(length > 0){
+                    //     return callback("office already exists with same email");
+                    // }
+                    // else{
+                    //     pool.query(`insert into offices (name, email, contact, country, state, city, postalCode, address, timezone, startDate, endDate, companyId) values (?,?,?,?,?,?,?,?,?,?,?,?)`,
+                    //     [data.name, data.email, data.contact, data.country, data.state, data.city, data.postalCode, data.address, data.timezone, data.startDate, data.endDate, data.companyId], 
+                    //     (error, results, fields)=> {
+                    //        if(error)
+                    //         {
+                    //             console.log(error);
+                    //             return callback(error);
+                    //         }
+                    //         else{
+                    //             fields = [data.email, data.companyId];
+                    //             pool.query(sql, fields, (error, results, fields)=>{
+                    //                 if(error)
+                    //                 {
+                    //                     console.log(error);
+                    //                     return callback(error);
+                    //                 }
+                    //                 else{
+                    //                     length = results.length;
+                    //                     if(length > 0){
+                    //                         return callback(null, parseOfficeResponse(results[0]));
+                    //                     }
+                    //                     else{
+                    //                         return callback(null, "failed to get office details");
+                    //                     }
+                    //                 }
+                    //             });
+                    //         }
+                    //     });
+                    // }
                 }
             });
            
@@ -165,7 +192,7 @@ module.exports = {
             (error, results, fields)=> {
                 if(error)
                 {
-                    return callback(errorMessage);
+                    return callback(error);
                 }
                 else{
                     pool.query(`${officeSql} where officeId = ? `, [data.officeId], (error, results, fields)=>{

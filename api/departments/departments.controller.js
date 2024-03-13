@@ -18,6 +18,14 @@ module.exports = {
                 message: "officeId is required"
             });
         }
+
+        if(!body.companyId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "companyId is required"
+            });
+        }
        create(request, (error, results) =>{
         if(error)
             {

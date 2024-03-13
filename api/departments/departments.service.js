@@ -13,6 +13,7 @@ o.name as officeName,
 o.email, 
 o.contact, 
 o.country, 
+o.state,
 city, 
 postalCode, 
 address, 
@@ -41,6 +42,7 @@ function parseDepartmentResponse(x){
             email : x.email,
             contact : x.contact,
             country : x.country,
+            state : x.state,
             city : x.city,
             postalCode : x.postalCode,
             address : x.address,
@@ -73,8 +75,8 @@ module.exports = {
                         return callback("department already exists with same name in selected office");
                     }
                     else{
-                        pool.query(`insert into departments (name, description, officeId) values (?,?,?)`,
-                        [data.name, data.description, data.officeId], 
+                        pool.query(`insert into departments (name, description, officeId, companyId) values (?,?,?,?)`,
+                        [data.name, data.description, data.officeId, data.companyId], 
                         (error, results, fields)=> {
                            if(error)
                             {
