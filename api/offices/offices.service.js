@@ -171,6 +171,7 @@ module.exports = {
             });
            
     },
+    
     update : (req, callback) => {
         var data = req.body;
         const now = new Date();
@@ -214,6 +215,7 @@ module.exports = {
                 }
         });
     },
+
     deleteOffice : (data, callback) => {
         pool.query(`delete from offices where officeId = ?`,
          [data.officeId], 

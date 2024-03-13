@@ -108,6 +108,7 @@ module.exports = {
             });
            
     },
+    
     update : (req, callback) => {
         var data = req.body;
         const now = new Date();
@@ -129,7 +130,7 @@ module.exports = {
             (error, results, fields)=> {
                 if(error)
                 {
-                    return callback(errorMessage);
+                    return callback(error);
                 }
                 else{
                     pool.query(`${departmentSql} where d.officeId = ? `, [data.officeId], (error, results, fields)=>{
@@ -151,6 +152,7 @@ module.exports = {
                 }
         });
     },
+
     deleteDepartment : (data, callback) => {
         pool.query(`delete from departments where departmentId = ?`,
          [data.departmentId], 
