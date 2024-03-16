@@ -1,14 +1,16 @@
 const pool = require("../../config/database");
 
 
-
 module.exports = {
     create :(req, callback) => {
             var data = req.body;
-            const fileUrls = req.files.map(file => `/files/${file.originalname}`);
-            if(fileUrls.length > 0)
+            if(req.files.length > 0)
             {
-                data.logoUrl = fileUrls[0];
+                var fileUrl = `/${process.env.File_Folder}/${req.files[0].originalname}`;
+                if(req.query.fileName){
+                    fileUrl = `/${process.env.File_Folder}/${req.query.fileName}`;
+                  }
+                data.logoUrl = fileUrl;
             }
             var sql = `select * from companies where name = ? or email = ?`;
             var fields = [data.name, data.email];
@@ -62,11 +64,14 @@ module.exports = {
         const now = new Date();
         data.modifiedAt = now;
         
-        const fileUrls = req.files.map(file => `/files/${file.originalname}`);
-        if(fileUrls.length > 0)
-        {
-            data.logoUrl = fileUrls[0];
-        }
+        if(req.files.length > 0)
+            {
+                var fileUrl = `/${process.env.File_Folder}/${req.files[0].originalname}`;
+                if(req.query.fileName){
+                    fileUrl = `/${process.env.File_Folder}/${req.query.fileName}`;
+                  }
+                data.logoUrl = fileUrl;
+            }
         let sql = 'UPDATE companies SET ';
         const setClauses = [];
         
@@ -83,7 +88,7 @@ module.exports = {
             (error, results, fields)=> {
                 if(error)
                 {
-                    return callback(errorMessage);
+                    return callback(error);
                 }
                 else{
                     pool.query(`select * from companies where companyId = ? `, [data.companyId], (error, results, fields)=>{
@@ -105,6 +110,7 @@ module.exports = {
                 }
         });
     },
+
     deleteCompany : (data, callback) => {
         pool.query(`delete from companies where companyId = ?`,
          [data.companyId], 

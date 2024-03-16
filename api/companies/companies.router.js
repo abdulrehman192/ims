@@ -2,22 +2,33 @@ const { createCompany, updateCompany, deleteCompany, getAllCompanies, getCompany
 
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
-const fs = require('fs');
+const FTPUploader = require('../file-uploader');
 
-const uploadIfImageUrl = (req, res, next) => {
+// Instantiate FTPUploader
+const ftpUploader = new FTPUploader();
+
+// Middleware to conditionally use multer based on imageUrl presence
+const uploadIfLogoUrl = (req, res, next) => {
     if (req.files && req.files.length > 0) {
       const uploadedFiles = req.files; // This is an array of uploaded files
       uploadedFiles.forEach((file) => {
           // Access file information
           const fieldName = file.fieldname; // Fieldname of the input field
+          console.log(req.query.fileName);
           const originalName = file.originalname; // Original name of the file
           const buffer = file.buffer; // Buffer containing the file data
-        
-          // Save the file to a directory
-          // Example using the fs module:
-          
-          const filePath = 'public/files/' + originalName;
-          fs.writeFileSync(filePath, buffer);
+          var remoteFilePath = `${originalName}`;
+          if(req.query.fileName){
+            remoteFilePath = `${req.query.fileName}`;
+          }
+          ftpUploader.uploadFile(buffer, remoteFilePath, (err) => {
+            if (err) {
+                console.error('Error uploading company logo file:', err);
+                next();
+            } else {
+                next();
+            }
+        });  
         });
         next();
         
@@ -26,11 +37,8 @@ const uploadIfImageUrl = (req, res, next) => {
       next();
     }
   };
-  
-
-
-router.post("/create-company" , uploadIfImageUrl, createCompany);
-router.patch("/update-company" , checkToken, uploadIfImageUrl, updateCompany);
+router.post("/create-company" , createCompany);
+router.patch("/update-company" , checkToken, uploadIfLogoUrl, updateCompany);
 router.delete("/delete-company" , checkToken, deleteCompany);
 router.post("/get-company-by-id" , checkToken, getCompanyById);
 router.post("/get-all-companies" , checkToken, getAllCompanies);

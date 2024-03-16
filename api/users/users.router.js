@@ -2,30 +2,38 @@ const { createUserAccount, updatePassword, updateUserAccount, userLogin, getUser
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
 
+const FTPUploader = require('../file-uploader');
+
+// Instantiate FTPUploader
+const ftpUploader = new FTPUploader();
+
 // Middleware to conditionally use multer based on imageUrl presence
 const uploadIfImageUrl = (req, res, next) => {
   if (req.files && req.files.length > 0) {
-    const uploadedFiles = req.files; // This is an array of uploaded files
-    uploadedFiles.forEach((file) => {
-        // Access file information
-        const fieldName = file.fieldname; // Fieldname of the input field
-        const originalName = file.originalname; // Original name of the file
-        const buffer = file.buffer; // Buffer containing the file data
-      
-        // Save the file to a directory
-        // Example using the fs module:
-        const fs = require('fs');
-        const filePath = 'public/files/' + originalName;
-        fs.writeFileSync(filePath, buffer);
-      });
-      next();
-      
-  } else {
-    // No imageUrl provided, proceed to the next middleware or route handler
-    next();
-  }
-};
+      const uploadedFiles = req.files;
+      uploadedFiles.forEach((file) => {
+          const originalName = file.originalname;
+          let remoteFilePath = originalName;
 
+          if (req.query.fileName) {
+              remoteFilePath = req.query.fileName;
+          }
+
+          // Create a read stream from the file buffer
+          const fileStream = require('stream').Readable.from(file.buffer);
+
+          // Pipe the read stream directly to the FTP upload stream
+          ftpUploader.uploadFile(fileStream, remoteFilePath, (err) => {
+              if (err) {
+                  console.error('Error uploading file:', err);
+                  next();
+              }
+          });
+      });
+  }
+
+  next();
+};
 
 router.post("/create-user-account", uploadIfImageUrl, createUserAccount);
 router.patch("/update-user-account", checkToken, uploadIfImageUrl, updateUserAccount);
