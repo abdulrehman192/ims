@@ -11,7 +11,7 @@ const sftpUploader = new FTPUploaderSSH();
 
 // Middleware to conditionally use multer based on imageUrl presence
 
-const uploadIfImageUrl = (req, res, next) => {
+const uploadIfLogoUrl = (req, res, next) => {
   if (req.files && req.files.length > 0) {
       const uploadedFiles = req.files;
       uploadedFiles.forEach(async(file) => {
@@ -48,7 +48,7 @@ const uploadIfImageUrl = (req, res, next) => {
 };
 
 
-router.post("/create-company" , createCompany);
+router.post("/create-company" ,uploadIfLogoUrl, createCompany);
 router.patch("/update-company" , checkToken, uploadIfLogoUrl, updateCompany);
 router.delete("/delete-company" , checkToken, deleteCompany);
 router.post("/get-company-by-id" , checkToken, getCompanyById);
