@@ -3,40 +3,51 @@ const { createCompany, updateCompany, deleteCompany, getAllCompanies, getCompany
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
 const FTPUploader = require('../file-uploader');
+const FTPUploaderSSH = require('../file-uploader-ssh');
 
 // Instantiate FTPUploader
 const ftpUploader = new FTPUploader();
+const sftpUploader = new FTPUploaderSSH();
 
 // Middleware to conditionally use multer based on imageUrl presence
-const uploadIfLogoUrl = (req, res, next) => {
-    if (req.files && req.files.length > 0) {
-      const uploadedFiles = req.files; // This is an array of uploaded files
-      uploadedFiles.forEach((file) => {
-          // Access file information
-          const fieldName = file.fieldname; // Fieldname of the input field
-          console.log(req.query.fileName);
-          const originalName = file.originalname; // Original name of the file
-          const buffer = file.buffer; // Buffer containing the file data
-          var remoteFilePath = `${originalName}`;
-          if(req.query.fileName){
-            remoteFilePath = `${req.query.fileName}`;
+
+const uploadIfImageUrl = (req, res, next) => {
+  if (req.files && req.files.length > 0) {
+      const uploadedFiles = req.files;
+      uploadedFiles.forEach(async(file) => {
+          const originalName = file.originalname;
+          let remoteFilePath = originalName;
+
+          if (req.query.fileName) {
+              remoteFilePath = req.query.fileName;
           }
-          ftpUploader.uploadFile(buffer, remoteFilePath, (err) => {
+        
+          req.imageUrl = remoteFilePath;
+          // Create a read stream from the file buffer
+          const fileStream = require('stream').Readable.from(file.buffer);
+          
+          // Pipe the read stream directly to the FTP upload stream
+          ftpUploader.uploadFile(fileStream, remoteFilePath, (err) => {
+              if (err) {
+                  console.error('Error uploading file:', err);
+                  next();
+              }
+          });
+          // Pipe the read stream directly to the SFTP upload stream
+          await sftpUploader.uploadFile(file.buffer, remoteFilePath, (err) => {
             if (err) {
-                console.error('Error uploading company logo file:', err);
-                next();
-            } else {
+                console.error('Error uploading file:', err);
                 next();
             }
-        });  
         });
-        next();
-        
-    } else {
-      // No imageUrl provided, proceed to the next middleware or route handler
-      next();
-    }
-  };
+
+      });
+  }
+
+  next();
+};
+
+
 router.post("/create-company" , createCompany);
 router.patch("/update-company" , checkToken, uploadIfLogoUrl, updateCompany);
 router.delete("/delete-company" , checkToken, deleteCompany);

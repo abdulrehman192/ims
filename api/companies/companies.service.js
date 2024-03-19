@@ -6,11 +6,7 @@ module.exports = {
             var data = req.body;
             if(req.files.length > 0)
             {
-                var fileUrl = `/${process.env.File_Folder}/${req.files[0].originalname}`;
-                if(req.query.fileName){
-                    fileUrl = `/${process.env.File_Folder}/${req.query.fileName}`;
-                  }
-                data.logoUrl = fileUrl;
+              data.logoUrl = req.imageUrl;
             }
             var sql = `select * from companies where name = ? or email = ?`;
             var fields = [data.name, data.email];
@@ -65,13 +61,9 @@ module.exports = {
         data.modifiedAt = now;
         
         if(req.files.length > 0)
-            {
-                var fileUrl = `/${process.env.File_Folder}/${req.files[0].originalname}`;
-                if(req.query.fileName){
-                    fileUrl = `/${process.env.File_Folder}/${req.query.fileName}`;
-                  }
-                data.logoUrl = fileUrl;
-            }
+        {
+          data.logoUrl = req.imageUrl;
+        }
         let sql = 'UPDATE companies SET ';
         const setClauses = [];
         

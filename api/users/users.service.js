@@ -588,11 +588,7 @@ module.exports = {
         data.createAt = now;
         if(req.files.length > 0)
         {
-            var fileUrl = `/${process.env.File_Folder}/${req.files[0].originalname}`;
-            if(req.query.fileName){
-                fileUrl = `/${process.env.File_Folder}/${req.query.fileName}`;
-              }
-            data.logoUrl = fileUrl;
+          data.imageUrl = req.imageUrl;
         }
         pool.query(`select * from users where email = ?`, [data.email], (error, result, fields) => {
             if(error)
@@ -639,13 +635,9 @@ module.exports = {
         const now = new Date();
         data.modifiedAt = now;
         if(req.files.length > 0)
-            {
-                var fileUrl = `/${process.env.File_Folder}/${req.files[0].originalname}`;
-                if(req.query.fileName){
-                    fileUrl = `/${process.env.File_Folder}/${req.query.fileName}`;
-                  }
-                data.imageUrl = fileUrl;
-            }
+        {
+          data.imageUrl = req.imageUrl;
+        }
         let sql = 'UPDATE users SET ';
         const setClauses = [];
         if(data.password){
