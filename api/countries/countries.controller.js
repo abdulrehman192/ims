@@ -1,4 +1,4 @@
-const  {getAllCountriesNames, getAllCountryCitiesNames, getAllCountryTimezones} = require("./countries.service");
+const  {getAllCountriesNames, getAllCountryCitiesNames, getAllCountryTimezones, getNationalities} = require("./countries.service");
 var errorMessage = "Error while connecting to database server";
 module.exports = {
     getAllCountriesNames : (request, response) =>{
@@ -17,6 +17,28 @@ module.exports = {
                 return response.status(200).json({
                     success : true,
                     message: "successfully read the countries data",
+                    data: results
+                });
+            }
+       });
+    },
+
+    getNationalities : (request, response) =>{
+        const body = request.body;
+    
+        getNationalities(request, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get nationalities",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message: "successfully read the nationalities data",
                     data: results
                 });
             }

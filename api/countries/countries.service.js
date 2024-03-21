@@ -13,6 +13,19 @@ module.exports = {
             }
         });
     },
+
+    getNationalities: (req, callback)=> {
+        pool.query(`SELECT * FROM nationalities `, [], (error, results) => {
+            if(error)
+            {
+                return callback(error);
+            }
+            else
+            {
+                return callback(null, results)
+            }
+        });
+    },
     getAllCountryCitiesNames: (data, callback)=> {
 
         pool.query(`SELECT * FROM cities where country = ?`, [data.country], (error, results) => {

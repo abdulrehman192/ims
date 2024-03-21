@@ -50,12 +50,14 @@ const officesRouter = require("./api/offices/offices.router");
 const departmentsRouter = require("./api/departments/departments.router");
 const usersRouter = require("./api/users/users.router");
 const countriesRouter = require("./api/countries/countries.router");
+const employeesRouter = require("./api/employees/employees.router");
 
 app.use("/api/companies", companiesRouter);
 app.use("/api/offices", officesRouter);
 app.use("/api/departments", departmentsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/countries", countriesRouter);
+app.use("/api/employees", employeesRouter);
 
 app.listen(process.env.APP_PORT || 4000, ()=> {
     console.log("Server is running on port : ", process.env.APP_PORT);
