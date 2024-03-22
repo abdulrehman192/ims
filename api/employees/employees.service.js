@@ -465,7 +465,8 @@ function parseEmployeeJson(a){
     lineManager = {
       employeeId : a.lineManagerId,
       firstName : a.lineManagerFirstName,
-      lastName : a.lineManagerLastName
+      lastName : a.lineManagerLastName,
+      photoUrl : a.lineManagerPhoto
     };
    }
 
@@ -534,6 +535,7 @@ function parseEmployeeJson(a){
     visaExpiry : a.visaExpiry,
     visaImageUrl : a.visaImageUrl,
     officeId : a.officeId,
+    departmentId : a.departmentId,
     companyId : a.companyId,
     createAt : a.createAt,
     modifiedAt : a.modifiedAt,
@@ -545,6 +547,13 @@ function parseEmployeeJson(a){
 
    return employee;
 }
+
+function parseOneEmployeeJson(a){
+  return a;
+}
+
+var oneEmployeeSql = `
+select * from employees e `;
 
 
 var employeeSql = 
@@ -571,6 +580,7 @@ e.cvUrl,
 e.lineManagerId, 
 l.firstName as lineManagerFirstName,
 l.lastName as lineManagerLastName,
+l.photoUrl as lineManagerPhoto,
 e.status, 
 e.passportNo, 
 e.passportExpiry, 
@@ -608,7 +618,7 @@ module.exports = {
         {
           data.photoUrl = req.imageUrl;
         }
-        pool.query(`${employeeSql} where e.email = ?`, [data.email], (error, result, fields) => {
+        pool.query(`${oneEmployeeSql} where e.email = ?`, [data.email], (error, result, fields) => {
             if(error)
             {
                 return callback(error);
@@ -648,7 +658,7 @@ module.exports = {
                     else{
                       //on success get the account details
                       var displayName = data.firstName + " " + data.lastName;
-                      pool.query(`${employeeSql} where e.email = ?`, [data.email], (error, results, fields) => {
+                      pool.query(`${oneEmployeeSql} where e.email = ?`, [data.email], (error, results, fields) => {
                         if(error)
                         {
                             return callback(error);
@@ -674,7 +684,7 @@ module.exports = {
                                 return callback(error);
                             }
                             else{
-                              return callback(null, parseEmployeeJson(emp));
+                              return callback(null, parseOneEmployeeJson(emp));
                             }
                           });
                         }
@@ -690,31 +700,45 @@ module.exports = {
         });
        
     },
-
     updateEmployee : (req, callback) => {
-        var data = req.body;
+      var data = req.body;
         const now = new Date();
+        let roleId = null;
+        let password = null;
         data.modifiedAt = now;
         if(req.files.length > 0)
         {
-          data.imageUrl = req.imageUrl;
+          data.photoUrl = req.imageUrl;
         }
-        let sql = 'UPDATE users SET ';
-        const setClauses = [];
-        if(data.password){
-            data.password = encrypt(data.password);
-            data.lastPassword = encrypt(data.password);
+        if(data.roleId){
+          roleId = data.roleId;
+          data.roleId = null;
         }
-        for (const key in data) {
-            if (data[key] !== null) {
-            setClauses.push(`${key} = ?`);
-            }
-        }
-        sql += setClauses.join(', '); 
-        sql += ' WHERE userId = ?'; 
 
-        const values = [...Object.values(data).filter(val => val !== null), data.userId];
-        pool.query(sql, values,
+        if(data.password){
+          password = data.password;
+          data.password = null;
+        }
+        pool.query(`${oneEmployeeSql} where e.employeeId = ?`, [data.employeeId], (error, result, fields) => {
+            if(error)
+            {
+                return callback(error);
+            }
+            if(result.length > 0)
+            {
+              let sql = 'UPDATE employees SET ';
+              const setClauses = [];
+              
+              for (const key in data) {
+                  if (data[key] !== null) {
+                  setClauses.push(`${key} = ?`);
+                  }
+              }
+              sql += setClauses.join(', '); 
+              sql += ' WHERE employeeId = ?'; 
+      
+              const values = [...Object.values(data).filter(val => val !== null), data.employeeId];
+              pool.query(sql, values,
                 (error, result, fields) => 
                 {
                     if(error)
@@ -723,51 +747,97 @@ module.exports = {
                         return callback(error);
                     }
                     else{
-                        return callback(null, "user account is updated");
+                      pool.query(`${oneEmployeeSql} where e.employeeId = ?`, [data.employeeId], (error, results, fields) => {
+                        if(error)
+                        {
+                            return callback(error);
+                        }
+                        else{
+                          var emp = results[0];
+                          //after getting details create a user account for employee
+                          if(password){
+                            pool.query(`update users set password = ?, lastPassword = ?, roleId = ? where employeeId = ?`,
+                            [
+                              encrypt(password),
+                              encrypt(password),
+                              roleId,
+                              emp.employeeId
+                            ], 
+                            (error, result, fields) => {
+                              if(error)
+                              {
+                                  return callback(error);
+                              }
+                              else{
+                                return callback(null, parseOneEmployeeJson(emp));
+                              }
+                            });
+                          }
+                          else{
+                            return callback(null, parseOneEmployeeJson(emp));
+                          }
+                          
+                        }
+                      });
                     }
                 });
-    },
+            }
+            else{
+                return callback("Employee Account not exists. Please create account first to update the data");
+            }
+        });
+    }, 
 
-    deleteEmployee : (req, callback) => {
+   
+    deleteEmployee: (req, callback) => {
       var data = req.body;
-      const now = new Date();
-      data.modifiedAt = now;
-      if(req.files.length > 0)
-      {
-        data.imageUrl = req.imageUrl;
-      }
-      let sql = 'UPDATE users SET ';
-      const setClauses = [];
-      if(data.password){
-          data.password = encrypt(data.password);
-          data.lastPassword = encrypt(data.password);
-      }
-      for (const key in data) {
-          if (data[key] !== null) {
-          setClauses.push(`${key} = ?`);
-          }
-      }
-      sql += setClauses.join(', '); 
-      sql += ' WHERE userId = ?'; 
-
-      const values = [...Object.values(data).filter(val => val !== null), data.userId];
-      pool.query(sql, values,
-              (error, result, fields) => 
-              {
-                  if(error)
-                  {
-                      console.log(error);
-                      return callback(error);
-                  }
-                  else{
-                      return callback(null, "user account is updated");
+      // Array to store the queries
+      const queries = [
+          'delete from employees where employeeId = ?',
+          'delete from users where employeeId = ?',
+          'delete from employee_attendance where employeeId = ?',
+          'delete from employee_bank_info where employeeId = ?',
+          'delete from employee_benefit where employeeId = ?',
+          'delete from employee_dependants where employeeId = ?',
+          'delete from employee_documents where employeeId = ?',
+          'delete from employee_emergency_contacts where employeeId = ?',
+          'delete from employee_job_info where employeeId = ?',
+          'delete from employee_leave_requests where employeeId = ?',
+          'delete from employee_offboard_info where employeeId = ?',
+          'delete from employee_payroll_info where employeeId = ?',
+          'delete from employee_probation_info where employeeId = ?',
+          'delete from employee_salary_info where employeeId = ?'
+      ];
+  
+      // Execute each query separately
+      const deleteQueries = queries.map(query => {
+          return new Promise((resolve, reject) => {
+              pool.query(query, [data.employeeId], (error, results, fields) => {
+                  if (error) {
+                      reject(error);
+                  } else {
+                      resolve(results);
                   }
               });
+          });
+      });
+  
+      // Execute all delete queries
+      Promise.all(deleteQueries)
+          .then(results => {
+              // All queries executed successfully
+              callback(null, results);
+          })
+          .catch(error => {
+              // Error occurred while executing queries
+              callback(error);
+          });
   },
+  
 
     getEmployeeById : (data, callback) =>{
         pool.query(`
-        ${employeeSql}
+        ${oneEmployeeSql} 
         where e.employeeId  = ?
         `, [data.userId], (error, result, fields)=> {
             if(error)
@@ -778,7 +848,7 @@ module.exports = {
                 var length = result.length;
                 if(length > 0){
                     var a = result[0];
-                    var user = parseEmployeeJson(a);
+                    var user = parseOneEmployeeJson(a);
                     return callback(null, user);
                 }
                 else{

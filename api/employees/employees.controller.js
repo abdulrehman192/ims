@@ -71,21 +71,22 @@ module.exports = {
     },
 
     updateEmployeeAccount : (request, response) => {
-
-        if(!request.body.userId)
+        
+        if(!request.body.employeeId)
         {
             return response.status(400).json({
                 success : false,
-                message: "userId is required to update data"
+                message: "employeeId is required to update data"
             });
         }
 
         updateEmployee(request, (error, results) => {
             if(error)
             {
-                if(error.includes("exists"))
+                console.log(error);
+                if(error.toString().includes("exists"))
                 {
-                    return response.status(409).json({
+                    return response.status(404).json({
                         success : false,
                         message : error
                     });
@@ -98,55 +99,49 @@ module.exports = {
                 }
             }
 
+            
+
             return response.status(200).json({
                 success : true,
-                message : "User account successfully updated"
+                message : "employee account successfully updated",
+                data : results
             });
         });
     },
 
     deleteEmployeeAccount : (request, response) => {
 
-        if(!request.body.userId)
+        if(!request.body.employeeId)
         {
             return response.status(400).json({
                 success : false,
-                message: "userId is required to update data"
+                message: "employeeId is required to update data"
             });
         }
 
         deleteEmployee(request, (error, results) => {
             if(error)
             {
-                if(error.includes("exists"))
-                {
-                    return response.status(409).json({
-                        success : false,
-                        message : error
-                    });
-                }
-                else{
-                    return response.status(500).json({
-                        success : false,
-                        message : error
-                    });
-                }
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
             }
 
             return response.status(200).json({
                 success : true,
-                message : "User account successfully updated"
+                message : "employee account successfully deleted"
             });
         });
     },
 
     getEmployeeById : (request, response) => {
         var body = request.body;
-        if(!body.userId)
+        if(!body.employeeId)
         {
             return response.status(400).json({
                 success : false,
-                message: "userId is required to get user details"
+                message: "employeeId is required to get employee details"
             });
         }
 
@@ -155,7 +150,7 @@ module.exports = {
             {
                 return response.status(500).json({
                     success : false,
-                    message : "error while getting user details",
+                    message : "error while getting employee details",
                     error : error
                 });
             }
@@ -165,7 +160,7 @@ module.exports = {
                 return response.status(404).json(
                     {
                         success : false,
-                        message : "user account not exists. Please create account"
+                        message : "employee account not exists. Please create account"
                     }
                 );
             }
@@ -173,7 +168,7 @@ module.exports = {
             {
                 return response.status(200).json({
                     success : true,
-                    message : "successfully read the user data",
+                    message : "successfully read the employee data",
                     data : results
                 });
             }

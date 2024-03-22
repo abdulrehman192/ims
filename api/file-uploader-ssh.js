@@ -20,7 +20,7 @@ class SFTPUploader {
       if (!this.isConnected) {
         await this.connect();
       }
-      var uploadPath = '/var/www/html/uploads/ims-files/' + remoteFilePath;
+      var uploadPath = '/srv/www/uploads/ims-files/' + remoteFilePath;
       // Upload the file
       await sftp.put(buffer, uploadPath);
       console.log('File uploaded to VPS over SSH connection successfully');
