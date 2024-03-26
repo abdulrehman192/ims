@@ -1,6 +1,6 @@
 const pool = require("../../config/database");
 const axios = require('axios');
-var errorMessage = "Error while connecting to database server";
+var error = "Error while connecting to database server";
 const otpGenerator = require('otp-generator');
 const CryptoJS = require('crypto-js');
 
@@ -675,7 +675,7 @@ module.exports = {
         `, [data.email], (error, result, fields)=> {
             if(error)
             {
-                return callback(errorMessage);
+                return callback(error);
             }
             else{
                 var length = result.length;
@@ -709,7 +709,7 @@ module.exports = {
         `, [data.userId], (error, result, fields)=> {
             if(error)
             {
-                return callback(errorMessage);
+                return callback(error);
             }
             else{
                 var length = result.length;

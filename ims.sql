@@ -45686,7 +45686,7 @@ CREATE TABLE `physical_assets` (
   `title` text NOT NULL,
   `description` text NOT NULL,
   `employeeId` int(11) DEFAULT NULL,
-  `serialNo` text NOT NULL DEFAULT '12345678',
+  `serialNo` text NOT NULL,
   `status` varchar(45) DEFAULT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
