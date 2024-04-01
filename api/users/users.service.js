@@ -582,8 +582,6 @@ left join companies c on u.companyId = c.companyId `;
 
 module.exports = {
     create : (req, callback) => {
-        // Initialize imageUrl to null
-        let imageUrl = null;
         var data = req.body;
         const now = new Date();
         data.createAt = now;
@@ -602,7 +600,7 @@ module.exports = {
                 pool.query(`Insert into users (displayName, imageUrl, email, password, employeeId, roleId, companyId, otp, otpExpireAt, lastPassword) values (?,?,?,?,?,?,?,?,?,?)`, 
                 [
                     data.displayName, 
-                    imageUrl, 
+                    data.imageUrl, 
                     data.email, 
                     encrypt(data.password),
                     data.employeeId, 
