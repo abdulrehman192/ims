@@ -634,6 +634,7 @@ module.exports = {
                 {
                     if(error)
                     {
+                        console.log(error);
                         return callback(error);
                     }
                     else{
@@ -642,6 +643,7 @@ module.exports = {
                       pool.query(`${oneEmployeeSql} where e.email = ?`, [data.email], (error, results, fields) => {
                         if(error)
                         {
+                            console.log(error);
                             return callback(error);
                         }
                         else{

@@ -233,7 +233,7 @@ module.exports = {
         if(data.search_text){
             text = data.search_text;
         }
-        pool.query(`select * from offices where (name like ? or email like ? or contact like ? or country like ?) and companyId = ?`,
+        pool.query(`${officeSql} where (o.name like ? or o.email like ? or o.contact like ? or o.country like ?) and o.companyId = ?`,
          [`%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`,  data.companyId], 
          (error, results, fields)=> {
             if(error)

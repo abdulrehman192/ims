@@ -2,11 +2,9 @@ const { createCompany, updateCompany, deleteCompany, getAllCompanies, getCompany
 
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
-const FTPUploader = require('../file-uploader');
+
 const FTPUploaderSSH = require('../file-uploader-ssh');
 
-// Instantiate FTPUploader
-const ftpUploader = new FTPUploader();
 const sftpUploader = new FTPUploaderSSH();
 
 // Middleware to conditionally use multer based on imageUrl presence
@@ -23,16 +21,6 @@ const uploadIfLogoUrl = (req, res, next) => {
           }
         
           req.imageUrl = remoteFilePath;
-          // Create a read stream from the file buffer
-          const fileStream = require('stream').Readable.from(file.buffer);
-          
-          // Pipe the read stream directly to the FTP upload stream
-          ftpUploader.uploadFile(fileStream, remoteFilePath, (err) => {
-              if (err) {
-                  console.error('Error uploading file:', err);
-                  next();
-              }
-          });
           // Pipe the read stream directly to the SFTP upload stream
           await sftpUploader.uploadFile(file.buffer, remoteFilePath, (err) => {
             if (err) {

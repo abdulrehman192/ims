@@ -51,6 +51,9 @@ const departmentsRouter = require("./api/departments/departments.router");
 const usersRouter = require("./api/users/users.router");
 const countriesRouter = require("./api/countries/countries.router");
 const employeesRouter = require("./api/employees/employees.router");
+const announcementRouter = require("./api/announcements/announcements.router");
+const filesRouter = require("./api/common-files/common-files.router");
+const digitalAssetsRouter = require("./api/digital-assets/digital-assets.router");
 
 app.use("/api/companies", companiesRouter);
 app.use("/api/offices", officesRouter);
@@ -58,6 +61,9 @@ app.use("/api/departments", departmentsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/countries", countriesRouter);
 app.use("/api/employees", employeesRouter);
+app.use("/api/announcements", announcementRouter);
+app.use("/api/files", filesRouter);
+app.use("/api/assets", digitalAssetsRouter);
 
 app.listen(process.env.APP_PORT || 4000, ()=> {
     console.log("Server is running on port : ", process.env.APP_PORT);

@@ -1,7 +1,7 @@
-const { createEmployeeAccount, updateEmployeeAccount, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles } = require("./employees.controller");
+const { createAnnouncement, updateAnnouncement, deleteAnnouncement, getAllAnnouncements } = require("./announcements.controller");
+
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
-
 
 const FTPUploaderSSH = require('../file-uploader-ssh');
 
@@ -20,7 +20,16 @@ const uploadIfImageUrl = (req, res, next) => {
           }
         
           req.imageUrl = remoteFilePath;
-        
+          // Create a read stream from the file buffer
+          const fileStream = require('stream').Readable.from(file.buffer);
+          
+        //   // Pipe the read stream directly to the FTP upload stream
+        //   ftpUploader.uploadFile(fileStream, remoteFilePath, (err) => {
+        //       if (err) {
+        //           console.error('Error uploading file:', err);
+        //           next();
+        //       }
+        //   });
           // Pipe the read stream directly to the SFTP upload stream
           await sftpUploader.uploadFile(file.buffer, remoteFilePath, (err) => {
             if (err) {
@@ -35,11 +44,10 @@ const uploadIfImageUrl = (req, res, next) => {
   next();
 };
 
-router.post("/create-employee",checkToken, uploadIfImageUrl, createEmployeeAccount);
-router.patch("/update-employee", checkToken, uploadIfImageUrl, updateEmployeeAccount);
-router.delete("/delete-employee", checkToken, deleteEmployeeAccount);
-router.post("/get-employee-by-id", checkToken, getEmployeeById);
-router.post("/get-all-employees", checkToken, getAllEmployees);
-router.post("/get-user-roles", checkToken, getUserRoles);
+
+router.post("/create-announcement" ,checkToken, uploadIfImageUrl, createAnnouncement);
+router.patch("/update-announcement" , checkToken, uploadIfImageUrl, updateAnnouncement);
+router.delete("/delete-announcement" , checkToken, deleteAnnouncement);
+router.post("/get-all-announcements", checkToken, getAllAnnouncements);
 
 module.exports = router;
