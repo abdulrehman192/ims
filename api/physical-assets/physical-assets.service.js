@@ -1,51 +1,40 @@
 const pool = require("../../config/database");
-const CryptoJS = require('crypto-js');
-
-// Replace these values with your own secret key
-const secretKey = 'ims';
-
-// Function to encrypt a string
-function encrypt(text) {
-  const encrypted = CryptoJS.AES.encrypt(text, secretKey).toString();
-  return encrypted;
-}
-
-// Function to decrypt an encrypted string
-function decrypt(encryptedText) {
-  const decrypted = CryptoJS.AES.decrypt(encryptedText, secretKey).toString(CryptoJS.enc.Utf8);
-  return decrypted;
-}
 
 
 var assetsSql = `
 SELECT 
 assetId, 
 title, 
-d.description, 
-url,
- username, 
- password, 
- expireOn, 
- d.companyId, 
- d.createAt, 
- d.modifiedAt
- from digital_assets d
- left join companies c on c.companyId = d.companyId 
+description, 
+d.employeeId, 
+e.firstName,
+e.lastName,
+serialNo, 
+d.status, 
+d.companyId, 
+d.createAt, 
+d.modifiedAt
+from
+physical_assets d 
+left join employees e on e.employeeId = d.employeeId 
 `;
 
 function parseAssetResponse(x){
-    var password = "";
-    if(x.password){
-        password = decrypt(x.password);
+    var employee = null;
+    if(x.employeeId){
+        employee = {
+            firstName : x.firstName,
+            lastName : x.lastName
+        };
     }
     var asset = {
         assetId : x.assetId,
         title : x.title,
         description : x.description,
-        url : x.url,
-        username : x.username,
-        password : password,
-        expireOn : x.expireOn,
+        employeeId : x.employeeId,
+        employee : employee,
+        serialNo : x.serialNo,
+        status : x.status,
         companyId : x.companyId,
         createAt : x.createAt,
         modifiedAt : x.modifiedAt,
@@ -57,8 +46,8 @@ function parseAssetResponse(x){
 module.exports = {
     create :(req, callback) => {
             var data = req.body;
-            pool.query(`insert into digital_assets ( title, description, url, username, password, expireOn, companyId) values (?,?,?,?,?,?,?)`,
-            [data.title, data.description, data.url, data.username, encrypt(data.password),data.expireOn, data.companyId], 
+            pool.query(`insert into physical_assets (title, description, employeeId, serialNo, status, companyId) values (?,?,?,?,?,?)`,
+            [data.title, data.description, data.employeeId, data.serialNo, data.status, data.companyId], 
             (error, results, fields)=> {
                if(error)
                 {
@@ -76,7 +65,7 @@ module.exports = {
         const now = new Date();
         data.modifiedAt = now;
     
-        let sql = 'UPDATE digital_assets SET ';
+        let sql = 'UPDATE physical_assets SET ';
         const setClauses = [];
         
         for (const key in data) {
@@ -101,7 +90,7 @@ module.exports = {
     },
 
     deleteAsset : (data, callback) => {
-        pool.query(`delete from digital_assets where assetId = ?`,
+        pool.query(`delete from physical_assets where assetId = ?`,
          [data.assetId], 
          (error, results, fields)=> {
             if(error)
@@ -117,7 +106,7 @@ module.exports = {
         if(data.search_text){
             text = data.search_text;
         }
-        pool.query(`${assetsSql} where (d.title like ? or d.description like ? or d.url like ? or d.username like ?) and d.companyId = ?`,
+        pool.query(`${assetsSql} where (d.title like ? or d.description like ? or d.serialNo like ? or d.status like ?) and d.companyId = ?`,
          [`%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, data.companyId], 
          (error, results, fields)=> {
             if(error)
