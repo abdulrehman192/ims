@@ -1,4 +1,4 @@
-const { createEmployeeAccount, updateEmployeeAccount, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles } = require("./employees.controller");
+const { createEmployeeAccount, updateEmployeeAccount, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
 
@@ -41,5 +41,6 @@ router.delete("/delete-employee", checkToken, deleteEmployeeAccount);
 router.post("/get-employee-by-id", checkToken, getEmployeeById);
 router.post("/get-all-employees", checkToken, getAllEmployees);
 router.post("/get-user-roles", checkToken, getUserRoles);
+router.post("/get-employee-job-info", checkToken, getEmployeeJobInfo);
 
 module.exports = router;

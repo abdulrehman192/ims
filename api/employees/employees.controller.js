@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateEmployee, deleteEmployee, getEmployeeById, getAllEmployees, getUserRoles} = require("./employees.service");
+const  {create, updateEmployee, deleteEmployee, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -231,4 +231,31 @@ module.exports = {
        });
     },
 
+    getEmployeeJobInfo : (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch job info"
+            });
+        }
+        getEmployeeJobInfo(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get user job info",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get user job info",
+                    data : results
+                });
+            }
+       });
+    },
 };

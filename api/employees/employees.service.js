@@ -892,4 +892,95 @@ module.exports = {
      });
 },
 
+getEmployeeJobInfo : (data, callback) => {
+  var text = "";
+  if(data.search_text){
+      text = data.search_text;
+  }
+  pool.query(`
+  SELECT 
+  jobInfoId, 
+  employeeId, 
+  jobTitleId, 
+  j.title as jobTitle, 
+  j.description as titleDescription,
+  i.description as jobDescription, 
+  joinDate, 
+  i.departmentId, 
+  d.name as department, 
+  i.officeId, 
+  o.name as office,
+  positionType, 
+  employmentType, 
+  isCurrent, 
+  offBoardDate, 
+  i.createAt, 
+  i.modifiedAt
+  FROM employee_job_info i 
+  left join job_titles j on i.jobTitleId = j.id
+  left join departments d on i.departmentId = d.departmentId
+  left join offices o on i.officeId = o.officeId where i.employeeId = ?`,
+   [ data.employeeId], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          var timeline = [];
+          for(var d in results){
+            var jobTitle = {};
+            var office = {};
+            var department = {};
+
+            if(d.jobTitleId){
+              jobTitle = {
+                id: d.jobTitleId,
+                title : d.jobTitle,
+                description : d.titleDescription,
+              };
+            }
+
+            if(d.departmentId){
+              department = {
+                departmentId : d.departmentId,
+                name : d.department
+              };
+            }
+
+            if(d.officeId){
+              office = {
+                officeId : d.officeId,
+                name : d.office,
+              };
+            }
+
+            var job = {
+              jobInfoId : d.jobInfoId,
+              employeeId : d.employeeId,
+              description : d.jobDescription,
+              departmentId : d.departmentId,
+              department : department,
+              officeId : d.officeId,
+              office : office,
+              positionType : d.positionType,
+              jobTitleId : d.jobTitleId,
+              jobTitle : d.jobTitle,
+              isCurrent : d.isCurrent,
+              employmentType : d.employmentType,
+              joinDate : d.joinDate,
+              offBoardDate : d.offBoardDate,
+              createAt : d.createAt,
+              modifiedAt : d.modifiedAt
+            }
+
+            timeline.push(job);
+
+          }
+          return callback(null, timeline);
+      }
+          
+   });
+},
+
 }
