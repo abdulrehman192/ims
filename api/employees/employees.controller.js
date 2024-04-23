@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateEmployee, deleteEmployee, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo} = require("./employees.service");
+const  {create, updateProfilePhoto,updateEmployee, deleteEmployee, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -108,6 +108,44 @@ module.exports = {
             });
         });
     },
+
+    updateProfilePhoto : (request, response) => {
+        
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        if(request.files.length <= 0)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "profile photo is required to update data"
+            });
+        }
+
+        updateProfilePhoto(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            
+
+            return response.status(200).json({
+                success : true,
+                message : "employee photo successfully updated",
+                data : results
+            });
+        });
+    },
+
 
     deleteEmployeeAccount : (request, response) => {
 
@@ -225,6 +263,28 @@ module.exports = {
                 return response.status(200).json({
                     success : true,
                     message : "successfully get user roles data",
+                    data : results
+                });
+            }
+       });
+    },
+
+    getVisaTypes : (request, response) => {
+        const body = request.body;
+    
+        getVisaTypes(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get visa types data",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get visa types data",
                     data : results
                 });
             }

@@ -597,7 +597,9 @@ module.exports = {
         data.createAt = now;
         if(req.files.length > 0)
         {
-          data.photoUrl = req.imageUrl;
+          req.files.forEach(file => {
+            data[file.fieldname] = req[file.fieldname];
+          });
         }
         pool.query(`${oneEmployeeSql} where e.email = ?`, [data.email], (error, result, fields) => {
             if(error)
@@ -699,7 +701,9 @@ module.exports = {
         data.modifiedAt = now;
         if(req.files.length > 0)
         {
-          data.photoUrl = req.imageUrl;
+          req.files.forEach(file => {
+            data[file.fieldname] = req[file.fieldname];
+          });
         }
         if(data.roleId){
           roleId = data.roleId;
@@ -779,7 +783,32 @@ module.exports = {
         });
     }, 
 
-   
+    updateProfilePhoto: (req, callback)=> {
+      var data = req.body;
+      var photoUrl = "";
+      if(req.files.length > 0)
+      {
+        req.files.forEach(file => {
+          data[file.fieldname] = req[file.fieldname];
+        });
+        pool.query(`update employees set photoUrl = ? where employeeId = ?`, [data.photoUrl, data.employeeId], (error, result) => {
+          if(error)
+            {
+                return callback(errorMessage);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+      else{
+        return callback("profile photo file is required");
+      }
+
+      
+
+    },
+
     deleteEmployee: (req, callback) => {
       var data = req.body;
       // Array to store the queries
@@ -890,6 +919,25 @@ module.exports = {
         }
             
      });
+},
+
+getVisaTypes : (data, callback) => {
+  var text = "";
+  if(data.search_text){
+      text = data.search_text;
+  }
+  pool.query(`select * from visaTypes`,
+   [], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          return callback(null, results);
+      }
+          
+   });
 },
 
 getEmployeeJobInfo : (data, callback) => {

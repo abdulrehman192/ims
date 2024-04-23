@@ -1,4 +1,4 @@
-const { createEmployeeAccount, updateEmployeeAccount, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
+const { createEmployeeAccount, updateProfilePhoto, updateEmployeeAccount, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
 
@@ -15,11 +15,12 @@ const uploadIfImageUrl = (req, res, next) => {
           const originalName = file.originalname;
           let remoteFilePath = originalName;
 
-          if (req.query.fileName) {
-              remoteFilePath = req.query.fileName;
+          if (req.query[file.fieldname]) {
+              remoteFilePath = req.query[file.fieldname];
           }
-        
-          req.imageUrl = remoteFilePath;
+          
+          console.log(remoteFilePath);
+          req[file.fieldname] = remoteFilePath;
         
           // Pipe the read stream directly to the SFTP upload stream
           await sftpUploader.uploadFile(file.buffer, remoteFilePath, (err) => {
@@ -37,10 +38,12 @@ const uploadIfImageUrl = (req, res, next) => {
 
 router.post("/create-employee",checkToken, uploadIfImageUrl, createEmployeeAccount);
 router.patch("/update-employee", checkToken, uploadIfImageUrl, updateEmployeeAccount);
+router.patch("/update-employee-profile-photo", checkToken, uploadIfImageUrl, updateProfilePhoto);
 router.delete("/delete-employee", checkToken, deleteEmployeeAccount);
 router.post("/get-employee-by-id", checkToken, getEmployeeById);
 router.post("/get-all-employees", checkToken, getAllEmployees);
 router.post("/get-user-roles", checkToken, getUserRoles);
+router.post("/get-visa-types", checkToken, getVisaTypes);
 router.post("/get-employee-job-info", checkToken, getEmployeeJobInfo);
 
 module.exports = router;
