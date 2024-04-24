@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateProfilePhoto,updateEmployee, deleteEmployee, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
+const  {create, updateProfilePhoto,updateEmployee, deleteEmployee, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -146,6 +146,33 @@ module.exports = {
         });
     },
 
+    updateCurrentSalary : (request, response) => {
+        
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        updateCurrentSalary(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee salary successfully updated",
+                data : results
+            });
+        });
+    },
+
 
     deleteEmployeeAccount : (request, response) => {
 
@@ -269,6 +296,34 @@ module.exports = {
        });
     },
 
+    getEmployeeSalaryHistory : (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch salary histoy"
+            });
+        }
+        getEmployeeSalaryHistory(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get salary history",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get salary history",
+                    data : results
+                });
+            }
+       });
+    },
+
     getVisaTypes : (request, response) => {
         const body = request.body;
     
@@ -285,6 +340,28 @@ module.exports = {
                 return response.status(200).json({
                     success : true,
                     message : "successfully get visa types data",
+                    data : results
+                });
+            }
+       });
+    },
+
+    getCurrencies : (request, response) => {
+        const body = request.body;
+    
+        getCurrencies(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get currencies data",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get currencies data",
                     data : results
                 });
             }

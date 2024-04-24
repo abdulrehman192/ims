@@ -809,6 +809,44 @@ module.exports = {
 
     },
 
+    updateCurrentSalary: (req, callback)=> {
+      var data = req.body;
+      if(req.query.type == "new"){
+        //add new record
+        pool.query(`insert into employee_salary_info(employeeId, effectiveStart, effectiveEnd, basicSalary, transportAllowance, houseRentAllowance, netSalary, reason, currency, current) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [data.employeeId, data.effectiveStart, data.effectiveEnd, data.basicSalary, data.transportAllowance, data.houseRentAllowance, data.netSalary, data.reason, data.currency, data.current], (error, result) => {
+          if(error)
+            {
+                return callback(errorMessage);
+            }
+            else{
+              //update all the other records current value to 0
+              pool.query(`update employee_salary_info set current = 0 where employeeId = ? and netSalary != ?`, [data.employeeId, data.netSalary], (error, result) =>{
+                if(error)
+                {
+                    return callback(errorMessage);
+                }
+                else{
+                  return callback(null, result);
+                }
+              });
+              
+            }
+        });
+      }
+      else{
+        pool.query(`update employee_salary_info set effectiveStart = ?, effectiveEnd = ?, basicSalary = ?, transportAllowance = ?, houseRentAllowance = ?, netSalary = ?, reason = ?, currency = ?, current = ? where employeeId = ? and salaryId = ?`, [data.effectiveStart, data.effectiveEnd, data.basicSalary, data.transportAllowance, data.houseRentAllowance, data.netSalary, data.reason, data.currency, data.current, data.employeeId, data.salaryId], (error, result) => {
+          if(error)
+            {
+                return callback(errorMessage);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+
+    },
+
     deleteEmployee: (req, callback) => {
       var data = req.body;
       // Array to store the queries
@@ -921,12 +959,47 @@ module.exports = {
      });
 },
 
+getEmployeeSalaryHistory : (data, callback) => {
+
+  pool.query(`select * from employee_salary_info where employeeId = ?`,
+   [ data.employeeId], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          return callback(null, results);
+      }
+          
+   });
+},
+
 getVisaTypes : (data, callback) => {
   var text = "";
   if(data.search_text){
       text = data.search_text;
   }
   pool.query(`select * from visaTypes`,
+   [], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          return callback(null, results);
+      }
+          
+   });
+},
+
+getCurrencies : (data, callback) => {
+  var text = "";
+  if(data.search_text){
+      text = data.search_text;
+  }
+  pool.query(`select * from currencies`,
    [], 
    (error, results, fields)=> {
       if(error)
