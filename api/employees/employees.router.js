@@ -1,4 +1,4 @@
-const { createEmployeeAccount, updateProfilePhoto, updateCurrentSalary, updateEmployeeAccount, getCurrencies, getEmployeeSalaryHistory, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
+const { createEmployeeAccount, updateProfilePhoto, updateCurrentSalary, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateEmployeeAccount, getCurrencies, getEmployeeSalaryHistory, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
 
@@ -44,9 +44,13 @@ router.post("/get-employee-by-id", checkToken, getEmployeeById);
 router.post("/get-all-employees", checkToken, getAllEmployees);
 router.post("/get-user-roles", checkToken, getUserRoles);
 router.post("/get-salary-history", checkToken, getEmployeeSalaryHistory);
+router.post("/get-job-history", checkToken, getEmployeeJobHistory);
+router.post("/get-payroll-history", checkToken, getEmployeePayrollHistory);
 router.post("/get-visa-types", checkToken, getVisaTypes);
 router.post("/get-currencies", checkToken, getCurrencies);
+router.post("/get-job-titles", checkToken, getJobTitles);
 router.post("/update-current-salary", checkToken, updateCurrentSalary);
+router.post("/update-current-job", checkToken, updateCurrentJob);
 router.post("/get-employee-job-info", checkToken, getEmployeeJobInfo);
 
 module.exports = router;

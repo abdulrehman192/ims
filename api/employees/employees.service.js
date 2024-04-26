@@ -809,6 +809,44 @@ module.exports = {
 
     },
 
+    updateCurrentJob: (req, callback)=> {
+      var data = req.body;
+      if(req.query.type == "new"){
+        //add new record
+        pool.query(`insert into employee_job_info(employeeId, jobTitleId, joinDate, departmentId, officeId, positionType, employmentType, isCurrent, jobType) values(?, ?, ?, ?, ?, ?, ?, ?, ?)`, [data.employeeId, data.jobTitleId, data.joinDate, data.departmentId, data.officeId, data.positionType, data.employmentType, data.isCurrent, data.jobType], (error, result) => {
+          if(error)
+            {
+                return callback(errorMessage);
+            }
+            else{
+              //update all the other records current value to 0
+              pool.query(`update employee_job_info set isCurrent = 0 where employeeId = ? and jobTitleId != ?`, [data.employeeId, data.jobTitleId], (error, result) =>{
+                if(error)
+                {
+                    return callback(errorMessage);
+                }
+                else{
+                  return callback(null, result);
+                }
+              });
+              
+            }
+        });
+      }
+      else{
+        pool.query(`update employee_job_info set jobTitleId = ?, joinDate = ?, departmentId = ?, officeId = ?, positionType = ?, employmentType = ?, isCurrent = ?, jobType = ? where employeeId = ? and jobInfoId = ?`, [ data.jobTitleId, data.joinDate, data.departmentId, data.officeId, data.positionType, data.employmentType, data.isCurrent, data.jobType, data.employeeId, data.jobInfoId], (error, result) => {
+          if(error)
+            {
+                return callback(errorMessage);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+
+    },
+
     updateCurrentSalary: (req, callback)=> {
       var data = req.body;
       if(req.query.type == "new"){
@@ -975,6 +1013,222 @@ getEmployeeSalaryHistory : (data, callback) => {
    });
 },
 
+getEmployeeJobHistory : (data, callback) => {
+
+  pool.query(`
+  select 
+  jobInfoId,
+  employeeId, 
+  jobTitleId, 
+  joinDate, 
+  j.departmentId, 
+  j.officeId, 
+  positionType, 
+  employmentType, 
+  isCurrent, 
+  jobType, 
+  j.createAt, 
+  j.modifiedAt,
+  id, 
+  title, 
+  t.description, 
+  t.createAt as titleCreateAt, 
+  t.modifiedAt as titleModifiedAt,  
+  o.name as office, 
+  d.name as department
+  from 
+  employee_job_info j 
+  left join job_titles t on t.id = j.jobInfoId
+  left join offices o on o.officeId = j.officeId
+  left join departments d on d.departmentId = j.departmentId
+  where j.employeeId = ?`,
+   [ data.employeeId], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+           var history = [];
+           for(var d in results){
+            var item = results[d];
+            var job = null;
+            var jobTitle = {
+              id: item.id,
+              title: item.title,
+              description : item.description,
+              createAt: item.titleCreateAt,
+              modifiedAt : item.titleModifiedeAt
+            };
+            var office = {
+              officeId: item.officeId,
+              name : item.office
+            };
+            var department = {
+              departmentId : item.departmentId,
+              name : item.department
+            };
+
+            job = {
+              jobInfoId : item.jobInfoId,
+              jobTitle : jobTitle,
+              office : office,
+              department : department,
+              employeeId: item.employeeId,
+              departmentId: item.departmentId,
+              officeId: item.officeId,
+              positionType: item.positionType,
+              jobTitleId: item.jobTitleId,
+              isCurrent: item.isCurrent,
+              employmentType: item.employmentType,
+              joinDate: item.joinDate,
+              jobType: item.jobType,
+              createAt: item.createAt,
+              modifiedAt: item.modifiedAt,
+            };
+
+            history.push(job);
+           }
+          return callback(null, history);
+      }
+          
+   });
+},
+
+getEmployeePayrollHistory : (data, callback) => {
+
+  pool.query(`
+  SELECT
+  payrollId, 
+  p.salaryId, 
+  fileUrl, 
+  paidAmount, 
+  cutAmount, 
+  cutReason, 
+  paidDate, 
+  p.createAt, 
+  p.modifiedAt,
+  p.jobInfoId,
+  p.employeeId, 
+  jobTitleId, 
+  joinDate, 
+  j.departmentId, 
+  j.officeId, 
+  positionType, 
+  employmentType, 
+  isCurrent, 
+  jobType, 
+  j.createAt, 
+  j.modifiedAt,
+  id, 
+  title, 
+  t.description, 
+  t.createAt as titleCreateAt, 
+  t.modifiedAt as titleModifiedAt,  
+  o.name as office, 
+  d.name as department,
+  effectiveStart, 
+  effectiveEnd, 
+  basicSalary, 
+  transportAllowance, 
+  houseRentAllowance, 
+  netSalary, 
+  reason, 
+  currency, 
+  current 
+  FROM 
+  employee_payroll_info p 
+  left join employee_job_info j on j.jobInfoId = p.jobInfoId
+  left join job_titles t on t.id = j.jobInfoId
+  left join offices o on o.officeId = j.officeId
+  left join departments d on d.departmentId = j.departmentId
+  left join employee_salary_info s on s.salaryId = p.salaryId
+  where p.employeeId = ?`,
+   [ data.employeeId], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+           var history = [];
+           for(var d in results){
+            var item = results[d];
+            var job = null;
+            var salaryInfo = null;
+            var payroll = null;
+            var jobTitle = {
+              id: item.id,
+              title: item.title,
+              description : item.description,
+              createAt: item.titleCreateAt,
+              modifiedAt : item.titleModifiedeAt
+            };
+            var office = {
+              officeId: item.officeId,
+              name : item.office
+            };
+            var department = {
+              departmentId : item.departmentId,
+              name : item.department
+            };
+
+            job = {
+              jobInfoId : item.jobTitle,
+              jobTitle : jobTitle,
+              office : office,
+              department : department,
+              employeeId: item.employeeId,
+              departmentId: item.departmentId,
+              officeId: item.officeId,
+              positionType: item.positionType,
+              jobTitleId: item.jobTitleId,
+              isCurrent: item.isCurrent,
+              employmentType: item.employmentType,
+              joinDate: item.joinDate,
+              jobType: item.jobType,
+              createAt: item.createAt,
+              modifiedAt: item.modifiedAt,
+            };
+
+            salaryInfo = {
+              salaryId  : item.salaryId,
+              effectiveStart : item.effectiveStart,
+              effectiveEnd : item.effectiveEnd,
+              basicSalary: item.basicSalary,
+              transportAllowance : item.transportAllowance,
+              houseRentAllowance : item.houseRentAllowance,
+              netSalary : item.netSalary,
+              reason : item.reason,
+              currency : item.currency,
+              current: item.current
+            };
+
+            payroll = {
+              jobInfo : job,
+              salaryInfo: salaryInfo,
+              payrollId : item.payrollId,
+              fileUrl : item.fileUrl,
+              paidAmount : item.paidAmount,
+              cutAmount : item.cutAmount,
+              employeeId : item.employeeId,
+              jobInfoId : item.jobInfoId,
+              salaryId : item.salaryId,
+              cutReason : item.cutReason,
+              paidDate: item.paidDate,
+              createAt : item.createAt,
+              modifiedAt : item.modifiedAt
+
+            };
+
+            history.push(payroll);
+           }
+          return callback(null, history);
+      }
+          
+   });
+},
+
 getVisaTypes : (data, callback) => {
   var text = "";
   if(data.search_text){
@@ -1000,6 +1254,25 @@ getCurrencies : (data, callback) => {
       text = data.search_text;
   }
   pool.query(`select * from currencies`,
+   [], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          return callback(null, results);
+      }
+          
+   });
+},
+
+getJobTitles : (data, callback) => {
+  var text = "";
+  if(data.search_text){
+      text = data.search_text;
+  }
+  pool.query(`select * from job_titles`,
    [], 
    (error, results, fields)=> {
       if(error)

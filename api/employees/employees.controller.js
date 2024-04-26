@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateProfilePhoto,updateEmployee, deleteEmployee, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
+const  {create, updateProfilePhoto,updateEmployee, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -173,6 +173,33 @@ module.exports = {
         });
     },
 
+    updateCurrentJob : (request, response) => {
+        
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        updateCurrentJob(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee job data successfully updated",
+                data : results
+            });
+        });
+    },
+
 
     deleteEmployeeAccount : (request, response) => {
 
@@ -296,6 +323,28 @@ module.exports = {
        });
     },
 
+    getJobTitles : (request, response) => {
+        const body = request.body;
+    
+        getJobTitles(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get job titles data",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get job titles data",
+                    data : results
+                });
+            }
+       });
+    },
+
     getEmployeeSalaryHistory : (request, response) => {
         const body = request.body;
         if(!body.employeeId)
@@ -318,6 +367,62 @@ module.exports = {
                 return response.status(200).json({
                     success : true,
                     message : "successfully get salary history",
+                    data : results
+                });
+            }
+       });
+    },
+
+    getEmployeeJobHistory : (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch job histoy"
+            });
+        }
+        getEmployeeJobHistory(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get job history",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get job history",
+                    data : results
+                });
+            }
+       });
+    },
+
+    getEmployeePayrollHistory : (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch job histoy"
+            });
+        }
+        getEmployeePayrollHistory(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get job history",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get job history",
                     data : results
                 });
             }
