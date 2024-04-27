@@ -1,4 +1,4 @@
-const { createEmployeeAccount, updateProfilePhoto, updateCurrentSalary, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateEmployeeAccount, getCurrencies, getEmployeeSalaryHistory, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
+const { createEmployeeAccount, updateProfilePhoto, getPaymentMethods, createPayroll, updatePayroll, deletePayroll, updateCurrentSalary, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateEmployeeAccount, getCurrencies, getEmployeeSalaryHistory, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
 
@@ -37,9 +37,12 @@ const uploadIfImageUrl = (req, res, next) => {
 };
 
 router.post("/create-employee",checkToken, uploadIfImageUrl, createEmployeeAccount);
+router.post("/create-payroll",checkToken, uploadIfImageUrl, createPayroll);
 router.patch("/update-employee", checkToken, uploadIfImageUrl, updateEmployeeAccount);
+router.patch("/update-payroll", checkToken, uploadIfImageUrl, updatePayroll);
 router.patch("/update-employee-profile-photo", checkToken, uploadIfImageUrl, updateProfilePhoto);
 router.delete("/delete-employee", checkToken, deleteEmployeeAccount);
+router.delete("/delete-payroll", checkToken, deletePayroll);
 router.post("/get-employee-by-id", checkToken, getEmployeeById);
 router.post("/get-all-employees", checkToken, getAllEmployees);
 router.post("/get-user-roles", checkToken, getUserRoles);
@@ -48,6 +51,7 @@ router.post("/get-job-history", checkToken, getEmployeeJobHistory);
 router.post("/get-payroll-history", checkToken, getEmployeePayrollHistory);
 router.post("/get-visa-types", checkToken, getVisaTypes);
 router.post("/get-currencies", checkToken, getCurrencies);
+router.post("/get-payment-methods", checkToken, getPaymentMethods);
 router.post("/get-job-titles", checkToken, getJobTitles);
 router.post("/update-current-salary", checkToken, updateCurrentSalary);
 router.post("/update-current-job", checkToken, updateCurrentJob);

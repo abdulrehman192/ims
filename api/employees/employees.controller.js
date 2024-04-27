@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateProfilePhoto,updateEmployee, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
+const  {create, updateProfilePhoto,updateEmployee, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -195,6 +195,90 @@ module.exports = {
             return response.status(200).json({
                 success : true,
                 message : "employee job data successfully updated",
+                data : results
+            });
+        });
+    },
+
+    createPayroll : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to save data"
+            });
+        }
+        createPayroll(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee payroll data is created",
+                data : results
+            });
+        });
+    },
+
+    updatePayroll : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        if(!request.body.payrollId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "payrollId is required to update data"
+            });
+        }
+        updatePayroll(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee payroll data is updated",
+                data : results
+            });
+        });
+    },
+
+    deletePayroll : (request, response) => {
+    
+        if(!request.body.payrollId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "payrollId is required to delete data"
+            });
+        }
+        deletePayroll(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee payroll data is deleted",
                 data : results
             });
         });
@@ -407,7 +491,7 @@ module.exports = {
         {
             return response.status(400).json({
                 success : false,
-                message: "employeeId is required to fetch job histoy"
+                message: "employeeId is required to fetch payroll histoy"
             });
         }
         getEmployeePayrollHistory(body, (error, results) =>{
@@ -415,14 +499,14 @@ module.exports = {
             {
                 return response.status(500).json({
                     success : false,
-                    message : "failed to get job history",
+                    message : "failed to get payroll history",
                     error: error
                 });
             }
             else{
                 return response.status(200).json({
                     success : true,
-                    message : "successfully get job history",
+                    message : "successfully get payroll history",
                     data : results
                 });
             }
@@ -467,6 +551,28 @@ module.exports = {
                 return response.status(200).json({
                     success : true,
                     message : "successfully get currencies data",
+                    data : results
+                });
+            }
+       });
+    },
+
+    getPaymentMethods : (request, response) => {
+        const body = request.body;
+    
+        getPaymentMethods(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get payment methods data",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get payment methods data",
                     data : results
                 });
             }

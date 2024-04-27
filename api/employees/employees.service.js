@@ -1106,6 +1106,7 @@ getEmployeePayrollHistory : (data, callback) => {
   cutAmount, 
   cutReason, 
   paidDate, 
+  paymentMethod,
   p.createAt, 
   p.modifiedAt,
   p.jobInfoId,
@@ -1216,6 +1217,7 @@ getEmployeePayrollHistory : (data, callback) => {
               salaryId : item.salaryId,
               cutReason : item.cutReason,
               paidDate: item.paidDate,
+              paymentMethod: item.paymentMethod,
               createAt : item.createAt,
               modifiedAt : item.modifiedAt
 
@@ -1226,6 +1228,89 @@ getEmployeePayrollHistory : (data, callback) => {
           return callback(null, history);
       }
           
+   });
+},
+
+createPayroll : (req, callback) => {
+  var data = req.body;
+  const now = new Date();
+  data.createAt = now;
+  if(req.files.length > 0)
+  {
+    req.files.forEach(file => {
+      data[file.fieldname] = req[file.fieldname];
+    });
+  }
+
+
+  pool.query(`insert into employee_payroll_info ( employeeId, jobInfoId, salaryId, fileUrl, paidAmount, cutAmount, cutReason, paidDate, paymentMethod) values(?,?,?,?,?,?,?,?,?)`,
+  [
+    data.employeeId,
+    data.jobInfoId,
+    data.salaryId,
+    data.fileUrl,
+    data.paidAmount,
+    data.cutAmount,
+    data.cutReason,
+    data.paidDate,
+    data.paymentMethod,
+  ],
+  (error, results, fields) =>{
+    if(error)
+    {
+        return callback(error);
+    }
+    else{
+        return callback(null, results);
+    }
+  }
+);
+},
+
+updatePayroll : (req, callback) => {
+  var data = req.body;
+  const now = new Date();
+  data.createAt = now;
+  if(req.files.length > 0)
+  {
+    req.files.forEach(file => {
+      data[file.fieldname] = req[file.fieldname];
+    });
+  }
+
+  let sql = 'UPDATE employee_payroll_info SET ';
+        const setClauses = [];
+        
+        for (const key in data) {
+            if (data[key] !== null) {
+            setClauses.push(`${key} = ?`);
+            }
+        }
+        sql += setClauses.join(', '); 
+        sql += ' where employeeId = ? and payrollId = ?'; 
+        const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.payrollId];
+
+        pool.query(sql, values, 
+            (error, results, fields)=> {
+                if(error)
+                {
+                    return callback(error);
+                }
+                else{
+                    return callback(null, results);
+                }
+        });
+},
+
+deletePayroll: (data, callback) => {
+  pool.query(`delete from employee_payroll_info where payrollId = ?`,
+   [data.payrollId], 
+   (error, results, fields)=> {
+      if(error)
+          {
+              return callback(error);
+          }
+      return callback(null, results);
    });
 },
 
@@ -1273,6 +1358,25 @@ getJobTitles : (data, callback) => {
       text = data.search_text;
   }
   pool.query(`select * from job_titles`,
+   [], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          return callback(null, results);
+      }
+          
+   });
+},
+
+getPaymentMethods : (data, callback) => {
+  var text = "";
+  if(data.search_text){
+      text = data.search_text;
+  }
+  pool.query(`select * from payment_methods`,
    [], 
    (error, results, fields)=> {
       if(error)
