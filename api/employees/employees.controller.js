@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateProfilePhoto,updateEmployee, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
+const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -168,6 +168,33 @@ module.exports = {
             return response.status(200).json({
                 success : true,
                 message : "employee salary successfully updated",
+                data : results
+            });
+        });
+    },
+
+    updateBankInfo : (request, response) => {
+        
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        updateBankInfo(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee bank info successfully updated",
                 data : results
             });
         });
@@ -451,6 +478,34 @@ module.exports = {
                 return response.status(200).json({
                     success : true,
                     message : "successfully get salary history",
+                    data : results
+                });
+            }
+       });
+    },
+
+    getEmployeeBankInfo : (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch bank info"
+            });
+        }
+        getEmployeeBankInfo(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get bank info",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get bank info",
                     data : results
                 });
             }

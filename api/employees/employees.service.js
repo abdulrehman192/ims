@@ -1,6 +1,6 @@
 const pool = require("../../config/database");
 const axios = require('axios');
-var errorMessage = "Error while connecting to database server";
+var error = "Error while connecting to database server";
 const { sendEmail } = require('../email_service');
 const nodemailer = require('nodemailer');
 const CryptoJS = require('crypto-js');
@@ -794,7 +794,7 @@ module.exports = {
         pool.query(`update employees set photoUrl = ? where employeeId = ?`, [data.photoUrl, data.employeeId], (error, result) => {
           if(error)
             {
-                return callback(errorMessage);
+                return callback(error);
             }
             else{
               return callback(null, result);
@@ -816,14 +816,14 @@ module.exports = {
         pool.query(`insert into employee_job_info(employeeId, jobTitleId, joinDate, departmentId, officeId, positionType, employmentType, isCurrent, jobType) values(?, ?, ?, ?, ?, ?, ?, ?, ?)`, [data.employeeId, data.jobTitleId, data.joinDate, data.departmentId, data.officeId, data.positionType, data.employmentType, data.isCurrent, data.jobType], (error, result) => {
           if(error)
             {
-                return callback(errorMessage);
+                return callback(error);
             }
             else{
               //update all the other records current value to 0
               pool.query(`update employee_job_info set isCurrent = 0 where employeeId = ? and jobTitleId != ?`, [data.employeeId, data.jobTitleId], (error, result) =>{
                 if(error)
                 {
-                    return callback(errorMessage);
+                    return callback(error);
                 }
                 else{
                   return callback(null, result);
@@ -837,7 +837,7 @@ module.exports = {
         pool.query(`update employee_job_info set jobTitleId = ?, joinDate = ?, departmentId = ?, officeId = ?, positionType = ?, employmentType = ?, isCurrent = ?, jobType = ? where employeeId = ? and jobInfoId = ?`, [ data.jobTitleId, data.joinDate, data.departmentId, data.officeId, data.positionType, data.employmentType, data.isCurrent, data.jobType, data.employeeId, data.jobInfoId], (error, result) => {
           if(error)
             {
-                return callback(errorMessage);
+                return callback(error);
             }
             else{
               return callback(null, result);
@@ -854,14 +854,14 @@ module.exports = {
         pool.query(`insert into employee_salary_info(employeeId, effectiveStart, effectiveEnd, basicSalary, transportAllowance, houseRentAllowance, netSalary, reason, currency, current) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [data.employeeId, data.effectiveStart, data.effectiveEnd, data.basicSalary, data.transportAllowance, data.houseRentAllowance, data.netSalary, data.reason, data.currency, data.current], (error, result) => {
           if(error)
             {
-                return callback(errorMessage);
+                return callback(error);
             }
             else{
               //update all the other records current value to 0
               pool.query(`update employee_salary_info set current = 0 where employeeId = ? and netSalary != ?`, [data.employeeId, data.netSalary], (error, result) =>{
                 if(error)
                 {
-                    return callback(errorMessage);
+                    return callback(error);
                 }
                 else{
                   return callback(null, result);
@@ -875,7 +875,35 @@ module.exports = {
         pool.query(`update employee_salary_info set effectiveStart = ?, effectiveEnd = ?, basicSalary = ?, transportAllowance = ?, houseRentAllowance = ?, netSalary = ?, reason = ?, currency = ?, current = ? where employeeId = ? and salaryId = ?`, [data.effectiveStart, data.effectiveEnd, data.basicSalary, data.transportAllowance, data.houseRentAllowance, data.netSalary, data.reason, data.currency, data.current, data.employeeId, data.salaryId], (error, result) => {
           if(error)
             {
-                return callback(errorMessage);
+                return callback(error);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+
+    },
+
+    updateBankInfo: (req, callback)=> {
+      var data = req.body;
+      if(req.query.type == "new"){
+        //add new record
+        pool.query(`insert into employee_bank_info(employeeId, bankName, branch, accountName, accountNumber, swift, iban) values(?, ?, ?, ?, ?, ?, ?)`, [data.employeeId, data.bankName, data.branch, data.accountName, data.accountNumber, data.swift, data.iban], (error, result) => {
+          if(error)
+            {
+                return callback(error);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+      else{
+        pool.query(`update employee_bank_info set bankName = ?, branch = ?, accountName = ?, accountNumber = ?, swift = ?, iban = ? where employeeId = ? and bankId = ?`, [data.bankName, data.branch, data.accountName, data.accountNumber, data.swift, data.iban, data.employeeId, data.bankId], (error, result) => {
+          if(error)
+            {
+                return callback(error);
             }
             else{
               return callback(null, result);
@@ -938,7 +966,7 @@ module.exports = {
         `, [data.userId], (error, result, fields)=> {
             if(error)
             {
-                return callback(errorMessage);
+                return callback(error);
             }
             else{
                 var length = result.length;
@@ -1008,6 +1036,26 @@ getEmployeeSalaryHistory : (data, callback) => {
       }
       else{
           return callback(null, results);
+      }
+          
+   });
+},
+
+getEmployeeBankInfo: (data, callback) => {
+
+  pool.query(`select * from employee_bank_info where employeeId = ?`,
+   [ data.employeeId], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          var info = {};
+          if(results.length > 0){
+            info = results[0];
+          }
+          return callback(null, info);
       }
           
    });
@@ -1480,5 +1528,6 @@ getEmployeeJobInfo : (data, callback) => {
           
    });
 },
+
 
 }
