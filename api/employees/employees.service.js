@@ -1086,9 +1086,10 @@ getEmployeeJobHistory : (data, callback) => {
   d.name as department
   from 
   employee_job_info j 
-  left join job_titles t on t.id = j.jobInfoId
+  left join job_titles t on t.id = j.jobTitleId
   left join offices o on o.officeId = j.officeId
   left join departments d on d.departmentId = j.departmentId
+  
   where j.employeeId = ?`,
    [ data.employeeId], 
    (error, results, fields)=> {
@@ -1188,7 +1189,7 @@ getEmployeePayrollHistory : (data, callback) => {
   FROM 
   employee_payroll_info p 
   left join employee_job_info j on j.jobInfoId = p.jobInfoId
-  left join job_titles t on t.id = j.jobInfoId
+  left join job_titles t on t.id = j.jobTitleId
   left join offices o on o.officeId = j.officeId
   left join departments d on d.departmentId = j.departmentId
   left join employee_salary_info s on s.salaryId = p.salaryId
