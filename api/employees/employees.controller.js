@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
+const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeEmergencyContacts, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -252,6 +252,7 @@ module.exports = {
         });
     },
 
+
     updatePayroll : (request, response) => {
         if(!request.body.employeeId)
         {
@@ -294,7 +295,7 @@ module.exports = {
                 message: "payrollId is required to delete data"
             });
         }
-        deletePayroll(request, (error, results) => {
+        deletePayroll(request.body, (error, results) => {
             if(error)
             {
                 return response.status(500).json({
@@ -336,6 +337,118 @@ module.exports = {
                 message : "employee account successfully deleted"
             });
         });
+    },
+
+    createEmergencyContact : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to save data"
+            });
+        }
+        createEmergencyContact(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee emergency contact data is created",
+                data : results
+            });
+        });
+    },
+
+    updateEmergencyContact : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        if(!request.body.contactId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "contactId is required to update data"
+            });
+        }
+        updateEmergencyContact(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee emergency contact data is updated",
+                data : results
+            });
+        });
+    },
+
+    deleteEmergencyContact : (request, response) => {
+    
+        if(!request.body.contactId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "contactId is required to delete data"
+            });
+        }
+        deleteEmergencyContact(request.body, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee emergency contact data is deleted",
+                data : results
+            });
+        });
+    },
+
+    getEmployeeEmergencyContacts : (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch emergency contacts"
+            });
+        }
+        getEmployeeEmergencyContacts(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get emergency contacts",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get emergency contacts",
+                    data : results
+                });
+            }
+       });
     },
 
     getEmployeeById : (request, response) => {

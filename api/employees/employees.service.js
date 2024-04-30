@@ -1363,6 +1363,90 @@ deletePayroll: (data, callback) => {
    });
 },
 
+
+createEmergencyContact : (req, callback) => {
+  var data = req.body;
+  const now = new Date();
+  data.createAt = now;
+  
+  pool.query(`insert into employee_emergency_contacts (employeeId, name, relationship, phone) values(?,?,?,?)`,
+  [
+    data.employeeId,
+    data.name,
+    data.relationship,
+    data.phone,
+  ],
+  (error, results, fields) =>{
+    if(error)
+    {
+        return callback(error);
+    }
+    else{
+        return callback(null, results);
+    }
+  }
+);
+},
+
+updateEmergencyContact : (req, callback) => {
+  var data = req.body;
+  const now = new Date();
+  data.createAt = now;
+  
+
+  let sql = 'UPDATE employee_emergency_contacts SET ';
+        const setClauses = [];
+        
+        for (const key in data) {
+            if (data[key] !== null) {
+            setClauses.push(`${key} = ?`);
+            }
+        }
+        sql += setClauses.join(', '); 
+        sql += ' where employeeId = ? and contactId = ?'; 
+        const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.contactId];
+
+        pool.query(sql, values, 
+            (error, results, fields)=> {
+                if(error)
+                {
+                    return callback(error);
+                }
+                else{
+                    return callback(null, results);
+                }
+        });
+},
+
+deleteEmergencyContact: (data, callback) => {
+  console.log(data);
+  pool.query(`delete from employee_emergency_contacts where contactId = ?`,
+   [data.contactId], 
+   (error, results, fields)=> {
+      if(error)
+          {
+              return callback(error);
+          }
+      return callback(null, results);
+   });
+},
+
+getEmployeeEmergencyContacts : (data, callback) => {
+
+  pool.query(`select * from employee_emergency_contacts where employeeId = ?`,
+   [ data.employeeId], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          return callback(null, results);
+      }
+          
+   });
+},
+
 getVisaTypes : (data, callback) => {
   var text = "";
   if(data.search_text){

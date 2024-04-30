@@ -1,4 +1,4 @@
-const { createEmployeeAccount, updateProfilePhoto, getPaymentMethods, getEmployeeBankInfo, updateBankInfo, createPayroll, updatePayroll, deletePayroll, updateCurrentSalary, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateEmployeeAccount, getCurrencies, getEmployeeSalaryHistory, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
+const { createEmployeeAccount, updateProfilePhoto, getPaymentMethods, getEmployeeEmergencyContacts, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeBankInfo, updateBankInfo, createPayroll, updatePayroll, deletePayroll, updateCurrentSalary, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateEmployeeAccount, getCurrencies, getEmployeeSalaryHistory, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
 
@@ -38,15 +38,19 @@ const uploadIfImageUrl = (req, res, next) => {
 
 router.post("/create-employee",checkToken, uploadIfImageUrl, createEmployeeAccount);
 router.post("/create-payroll",checkToken, uploadIfImageUrl, createPayroll);
+router.post("/create-emergency-contact",checkToken, createEmergencyContact);
 router.patch("/update-employee", checkToken, uploadIfImageUrl, updateEmployeeAccount);
 router.patch("/update-payroll", checkToken, uploadIfImageUrl, updatePayroll);
+router.patch("/update-emergency-contact", checkToken, updateEmergencyContact);
 router.patch("/update-employee-profile-photo", checkToken, uploadIfImageUrl, updateProfilePhoto);
 router.delete("/delete-employee", checkToken, deleteEmployeeAccount);
 router.delete("/delete-payroll", checkToken, deletePayroll);
+router.delete("/delete-emergency-contact", checkToken, deleteEmergencyContact);
 router.post("/get-employee-by-id", checkToken, getEmployeeById);
 router.post("/get-all-employees", checkToken, getAllEmployees);
 router.post("/get-user-roles", checkToken, getUserRoles);
 router.post("/get-salary-history", checkToken, getEmployeeSalaryHistory);
+router.post("/get-emergency-contacts", checkToken, getEmployeeEmergencyContacts);
 router.post("/get-bank-info", checkToken, getEmployeeBankInfo);
 router.post("/get-job-history", checkToken, getEmployeeJobHistory);
 router.post("/get-payroll-history", checkToken, getEmployeePayrollHistory);
