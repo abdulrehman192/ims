@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeEmergencyContacts, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
+const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, createBenifit, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeEmergencyContacts, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -312,6 +312,119 @@ module.exports = {
         });
     },
 
+    createDocument : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to save data"
+            });
+        }
+        createDocument(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee document data is created",
+                data : results
+            });
+        });
+    },
+
+
+    updateDocument : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        if(!request.body.documentId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "documentId is required to update data"
+            });
+        }
+        updateDocument(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee document data is updated",
+                data : results
+            });
+        });
+    },
+
+    deleteDocument : (request, response) => {
+    
+        if(!request.body.documentId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "documentId is required to delete data"
+            });
+        }
+        deleteDocument(request.body, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee document data is deleted",
+                data : results
+            });
+        });
+    },
+
+    getEmployeeDocuments: (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch documents"
+            });
+        }
+        getEmployeeDocuments(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get documents",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get documents",
+                    data : results
+                });
+            }
+       });
+    },
+
 
     deleteEmployeeAccount : (request, response) => {
 
@@ -445,6 +558,232 @@ module.exports = {
                 return response.status(200).json({
                     success : true,
                     message : "successfully get emergency contacts",
+                    data : results
+                });
+            }
+       });
+    },
+
+    createDependent : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to save data"
+            });
+        }
+        createDependent(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee dependent data is created",
+                data : results
+            });
+        });
+    },
+
+    updateDependent : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        if(!request.body.dependantId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "dependantId is required to update data"
+            });
+        }
+        updateDependent(request, (error, results) => {
+            if(error)
+            {
+                console.log(error);
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee dependent data is updated",
+                data : results
+            });
+        });
+    },
+
+    deleteDependent : (request, response) => {
+    
+        if(!request.body.dependantId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "dependantId is required to delete data"
+            });
+        }
+        deleteDependent(request.body, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee dependent data is deleted",
+                data : results
+            });
+        });
+    },
+
+    getEmployeeDependents: (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch dependents"
+            });
+        }
+        getEmployeeDependents(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get dependents",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get dependents",
+                    data : results
+                });
+            }
+       });
+    },
+
+    createBenifit : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to save data"
+            });
+        }
+        createBenifit(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee benefit data is created",
+                data : results
+            });
+        });
+    },
+
+    updateBenifit : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        if(!request.body.benefitId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "benefitId is required to update data"
+            });
+        }
+        updateBenifit(request, (error, results) => {
+            if(error)
+            {
+                console.log(error);
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee benefit data is updated",
+                data : results
+            });
+        });
+    },
+
+    deleteBenifit : (request, response) => {
+    
+        if(!request.body.benefitId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "benefitId is required to delete data"
+            });
+        }
+        deleteBenifit(request.body, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee benifit data is deleted",
+                data : results
+            });
+        });
+    },
+
+    getEmployeeBenifits: (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch benifits"
+            });
+        }
+        getEmployeeBenifits(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get benifits",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get benifits",
                     data : results
                 });
             }

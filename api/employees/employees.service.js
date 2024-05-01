@@ -1319,7 +1319,7 @@ createPayroll : (req, callback) => {
 updatePayroll : (req, callback) => {
   var data = req.body;
   const now = new Date();
-  data.createAt = now;
+  data.modifiedAt = now;
   if(req.files.length > 0)
   {
     req.files.forEach(file => {
@@ -1364,78 +1364,19 @@ deletePayroll: (data, callback) => {
 },
 
 
-createEmergencyContact : (req, callback) => {
-  var data = req.body;
-  const now = new Date();
-  data.createAt = now;
-  
-  pool.query(`insert into employee_emergency_contacts (employeeId, name, relationship, phone) values(?,?,?,?)`,
-  [
-    data.employeeId,
-    data.name,
-    data.relationship,
-    data.phone,
-  ],
-  (error, results, fields) =>{
-    if(error)
-    {
-        return callback(error);
-    }
-    else{
-        return callback(null, results);
-    }
-  }
-);
-},
-
-updateEmergencyContact : (req, callback) => {
-  var data = req.body;
-  const now = new Date();
-  data.createAt = now;
-  
-
-  let sql = 'UPDATE employee_emergency_contacts SET ';
-        const setClauses = [];
-        
-        for (const key in data) {
-            if (data[key] !== null) {
-            setClauses.push(`${key} = ?`);
-            }
-        }
-        sql += setClauses.join(', '); 
-        sql += ' where employeeId = ? and contactId = ?'; 
-        const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.contactId];
-
-        pool.query(sql, values, 
-            (error, results, fields)=> {
-                if(error)
-                {
-                    return callback(error);
-                }
-                else{
-                    return callback(null, results);
-                }
-        });
-},
-
-deleteEmergencyContact: (data, callback) => {
-  console.log(data);
-  pool.query(`delete from employee_emergency_contacts where contactId = ?`,
-   [data.contactId], 
-   (error, results, fields)=> {
-      if(error)
-          {
-              return callback(error);
-          }
-      return callback(null, results);
-   });
-},
-
-getEmployeeEmergencyContacts : (data, callback) => {
-
-  pool.query(`select * from employee_emergency_contacts where employeeId = ?`,
-   [ data.employeeId], 
-   (error, results, fields)=> {
+  createEmergencyContact : (req, callback) => {
+    var data = req.body;
+    const now = new Date();
+    data.createAt = now;
+    
+    pool.query(`insert into employee_emergency_contacts (employeeId, name, relationship, phone) values(?,?,?,?)`,
+    [
+      data.employeeId,
+      data.name,
+      data.relationship,
+      data.phone,
+    ],
+    (error, results, fields) =>{
       if(error)
       {
           return callback(error);
@@ -1443,9 +1384,329 @@ getEmployeeEmergencyContacts : (data, callback) => {
       else{
           return callback(null, results);
       }
+    }
+  );
+  },
+
+  updateEmergencyContact : (req, callback) => {
+    var data = req.body;
+    const now = new Date();
+    data.createAt = now;
+    
+
+    let sql = 'UPDATE employee_emergency_contacts SET ';
+          const setClauses = [];
           
-   });
-},
+          for (const key in data) {
+              if (data[key] !== null) {
+              setClauses.push(`${key} = ?`);
+              }
+          }
+          sql += setClauses.join(', '); 
+          sql += ' where employeeId = ? and contactId = ?'; 
+          const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.contactId];
+
+          pool.query(sql, values, 
+              (error, results, fields)=> {
+                  if(error)
+                  {
+                      return callback(error);
+                  }
+                  else{
+                      return callback(null, results);
+                  }
+          });
+  },
+
+  deleteEmergencyContact: (data, callback) => {
+    console.log(data);
+    pool.query(`delete from employee_emergency_contacts where contactId = ?`,
+    [data.contactId], 
+    (error, results, fields)=> {
+        if(error)
+            {
+                return callback(error);
+            }
+        return callback(null, results);
+    });
+  },
+
+  getEmployeeEmergencyContacts : (data, callback) => {
+
+    pool.query(`select * from employee_emergency_contacts where employeeId = ?`,
+    [ data.employeeId], 
+    (error, results, fields)=> {
+        if(error)
+        {
+            return callback(error);
+        }
+        else{
+            return callback(null, results);
+        }
+            
+    });
+  },
+
+  createDependent : (req, callback) => {
+    var data = req.body;
+    const now = new Date();
+    data.createAt = now;
+    
+    pool.query(`insert into employee_dependants (employeeId, name, relationship, details) values(?,?,?,?)`,
+    [
+      data.employeeId,
+      data.name,
+      data.relationship,
+      data.phone,
+    ],
+    (error, results, fields) =>{
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          return callback(null, results);
+      }
+    }
+  );
+  },
+
+  updateDependent : (req, callback) => {
+    var data = req.body;
+    const now = new Date();
+    data.modifiedAt = now;
+    
+
+    let sql = 'UPDATE employee_dependants SET ';
+          const setClauses = [];
+          
+          for (const key in data) {
+              if (data[key] !== null) {
+              setClauses.push(`${key} = ?`);
+              }
+          }
+          sql += setClauses.join(', '); 
+          sql += ' where employeeId = ? and dependantId = ?'; 
+          const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.dependantId];
+
+          pool.query(sql, values, 
+              (error, results, fields)=> {
+                  if(error)
+                  {
+                      return callback(error);
+                  }
+                  else{
+                      return callback(null, results);
+                  }
+          });
+  },
+
+  deleteDependent: (data, callback) => {
+    console.log(data);
+    pool.query(`delete from employee_dependants where dependantId = ?`,
+    [data.dependantId], 
+    (error, results, fields)=> {
+        if(error)
+            {
+                return callback(error);
+            }
+        return callback(null, results);
+    });
+  },
+
+  getEmployeeDependents : (data, callback) => {
+
+    pool.query(`select * from employee_dependants where employeeId = ?`,
+    [ data.employeeId], 
+    (error, results, fields)=> {
+        if(error)
+        {
+            return callback(error);
+        }
+        else{
+            return callback(null, results);
+        }
+            
+    });
+  },
+
+  createBenifit : (req, callback) => {
+    var data = req.body;
+    const now = new Date();
+    data.createAt = now;
+    
+    pool.query(`insert into employee_benefits (employeeId, title, description, maxAmount) values(?,?,?,?)`,
+    [
+      data.employeeId,
+      data.title,
+      data.description,
+      data.maxAmount,
+    ],
+    (error, results, fields) =>{
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          return callback(null, results);
+      }
+    }
+  );
+  },
+
+  updateBenifit : (req, callback) => {
+    var data = req.body;
+    const now = new Date();
+    data.modifiedAt = now;
+    
+
+    let sql = 'UPDATE employee_benefits SET ';
+          const setClauses = [];
+          
+          for (const key in data) {
+              if (data[key] !== null) {
+              setClauses.push(`${key} = ?`);
+              }
+          }
+          sql += setClauses.join(', '); 
+          sql += ' where employeeId = ? and benefitId = ?'; 
+          const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.benefitId];
+
+          pool.query(sql, values, 
+              (error, results, fields)=> {
+                  if(error)
+                  {
+                      return callback(error);
+                  }
+                  else{
+                      return callback(null, results);
+                  }
+          });
+  },
+
+  deleteBenifit: (data, callback) => {
+    console.log(data);
+    pool.query(`delete from employee_benefits where benefitId = ?`,
+    [data.benefitId], 
+    (error, results, fields)=> {
+        if(error)
+            {
+                return callback(error);
+            }
+        return callback(null, results);
+    });
+  },
+
+  getEmployeeBenifits : (data, callback) => {
+
+    pool.query(`select * from employee_benefits where employeeId = ?`,
+    [ data.employeeId], 
+    (error, results, fields)=> {
+        if(error)
+        {
+            return callback(error);
+        }
+        else{
+            return callback(null, results);
+        }
+            
+    });
+  },
+
+  createDocument : (req, callback) => {
+    var data = req.body;
+    const now = new Date();
+    data.createAt = now;
+
+    if(req.files.length > 0)
+    {
+      req.files.forEach(file => {
+        data[file.fieldname] = req[file.fieldname];
+      });
+    }
+    
+    pool.query(`insert into employee_documents (employeeId, title, fileUrl, employeePrivacy) values(?,?,?,?)`,
+    [
+      data.employeeId,
+      data.title,
+      data.fileUrl,
+      data.employeePrivacy,
+    ],
+    (error, results, fields) =>{
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          return callback(null, results);
+      }
+    }
+  );
+  },
+
+  updateDocument : (req, callback) => {
+    var data = req.body;
+    const now = new Date();
+    data.modifiedAt = now;
+    if(req.files.length > 0)
+    {
+      req.files.forEach(file => {
+        data[file.fieldname] = req[file.fieldname];
+      });
+    }
+
+    let sql = 'UPDATE employee_documents SET ';
+          const setClauses = [];
+          
+          for (const key in data) {
+              if (data[key] !== null) {
+              setClauses.push(`${key} = ?`);
+              }
+          }
+          sql += setClauses.join(', '); 
+          sql += ' where employeeId = ? and documentId = ?'; 
+          const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.documentId];
+
+          pool.query(sql, values, 
+              (error, results, fields)=> {
+                  if(error)
+                  {
+                      return callback(error);
+                  }
+                  else{
+                      return callback(null, results);
+                  }
+          });
+  },
+
+  deleteDocument: (data, callback) => {
+    console.log(data);
+    pool.query(`delete from employee_documents where documentId = ?`,
+    [data.documentId], 
+    (error, results, fields)=> {
+        if(error)
+            {
+                return callback(error);
+            }
+        return callback(null, results);
+    });
+  },
+
+  getEmployeeDocuments : (data, callback) => {
+
+    pool.query(`select * from employee_documents where employeeId = ?`,
+    [ data.employeeId], 
+    (error, results, fields)=> {
+        if(error)
+        {
+            return callback(error);
+        }
+        else{
+            return callback(null, results);
+        }
+            
+    });
+  },
 
 getVisaTypes : (data, callback) => {
   var text = "";
