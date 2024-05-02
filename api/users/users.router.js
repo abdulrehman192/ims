@@ -1,4 +1,4 @@
-const { createUserAccount, updatePassword, updateUserAccount, userLogin, getUserById, requestResetPassword } = require("./users.controller");
+const { createUserAccount, updatePassword, updateUserAccount, userLogin, getUserById, requestResetPassword, getUsers } = require("./users.controller");
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
 
@@ -40,6 +40,7 @@ router.patch("/update-user-account", checkToken, uploadIfImageUrl, updateUserAcc
 router.post("/userLogin", userLogin);
 router.post("/update-password", updatePassword);
 router.post("/get-user-by-id", checkToken, getUserById);
+router.post("/get-users", checkToken, getUsers);
 router.post("/send-reset-password-email", requestResetPassword);
 
 module.exports = router;

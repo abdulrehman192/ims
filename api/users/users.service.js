@@ -503,7 +503,7 @@ function parseUserJson(a){
         displayName : a.displayName,
         imageUrl : a.imageUrl,
         email : a.email,
-        password : a.password,
+        password : decrypt(a.password),
         employeeId : a.employeeId,
         roleId : a.roleId,
         companyId : a.companyId,
@@ -724,6 +724,32 @@ module.exports = {
         });
     },
 
+    getUsers: (data, callback) =>{
+      var text = "";
+        if(data.search_text){
+            text = data.search_text;
+        }
+      pool.query(`
+      ${userSql}
+      where (u.displayName like ? or u.email like ? or r.role like ?) and u.companyId = ?`, 
+      [`%${text}%`, `%${text}%`, `%${text}%`, data.companyId], (error, result, fields)=> {
+          if(error)
+          {
+              return callback(error);
+          }
+          else{
+              var users = [];
+              for(var item in result){
+                var a = result[item];
+                var user = parseUserJson(a);
+                users.push(user);
+              }
+              return callback(null, users);
+          }
+  
+      });
+  },
+
     requestResetPassword: (data, callback) => {
         pool.query(`select * from users where email = ? `, [data.email], (error, results) =>{
           if(error){
@@ -761,6 +787,8 @@ module.exports = {
         });
         
     },
+
+
    
     updatePassword: (data, callback) =>{
         const now = new Date();

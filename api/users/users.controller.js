@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateUser, updatePassword, userLogin, getUserById, requestResetPassword} = require("./users.service");
+const  {create, updateUser, updatePassword, userLogin, getUserById, requestResetPassword, getUsers} = require("./users.service");
 const { sign } = require("jsonwebtoken");
 
 
@@ -263,6 +263,35 @@ module.exports = {
                 return response.status(200).json({
                     success : true,
                     message : "successfully read the user data",
+                    data : results
+                });
+            }
+        });
+    },
+
+     getUsers : (request, response) => {
+        var body = request.body;
+        if(!body.companyId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "companyId is required to get users"
+            });
+        }
+
+        getUsers(body, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "error while getting users",
+                    error : error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully read the users data",
                     data : results
                 });
             }
