@@ -680,7 +680,7 @@ module.exports = {
                 if(length > 0){
                     var a = result[0];
                     var user = parseUserJson(a);
-                    const x = decrypt(user.password);
+                    const x = user.password;
                     const passwordMatch = x==data.password;
                     if(user.status == 0){
                         return callback("You are not allowed to login this system.");
@@ -846,5 +846,32 @@ module.exports = {
         
     },
    
+    updateUserRole: (req, callback)=> {
+      var data = req.body;
+      if(req.query.type == "new"){
+        //add new record
+        pool.query(`insert into user_roles(role, description, permissions, companyId) values(?, ?, ?, ?)`, [data.role, data.description, data.permissions, data.companyId], (error, result) => {
+          if(error)
+            {
+                return callback(error);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+      else{
+        pool.query(`update user_roles set role = ?, description = ?, permissions = ? where roleId = ?`, [data.role, data.description, data.permissions, data.roleId], (error, result) => {
+          if(error)
+            {
+                return callback(error);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+
+    },
    
 }

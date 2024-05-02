@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateUser, updatePassword, userLogin, getUserById, requestResetPassword, getUsers} = require("./users.service");
+const  {create, updateUser, updatePassword, userLogin, getUserById, requestResetPassword, getUsers, updateUserRole} = require("./users.service");
 const { sign } = require("jsonwebtoken");
 
 
@@ -99,7 +99,32 @@ module.exports = {
         });
     },
 
-   
+    updateUserRole : (request, response) => {
+
+        if(!request.body.companyId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "companyId is required to update data"
+            });
+        }
+
+        updateUserRole(request, (error, results) => {
+            if(error)
+            {
+                console.log(error);
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "User role successfully updated"
+            });
+        });
+    },
 
     updatePassword: (request, response) => {
 

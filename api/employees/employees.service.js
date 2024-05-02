@@ -1011,8 +1011,8 @@ module.exports = {
     if(data.search_text){
         text = data.search_text;
     }
-    pool.query(`select * from user_roles where companyId = ?`,
-     [ data.companyId], 
+    pool.query(`select * from user_roles where (role like ? or description like ?) and companyId = ?`,
+     [ `%${text}%`, `%${text}%`,data.companyId], 
      (error, results, fields)=> {
         if(error)
         {
