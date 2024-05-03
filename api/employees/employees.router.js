@@ -1,4 +1,4 @@
-const { createEmployeeAccount, updateProfilePhoto, getPaymentMethods, createBenifit, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, getEmployeeEmergencyContacts, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeBankInfo, updateBankInfo, createPayroll, updatePayroll, deletePayroll, updateCurrentSalary, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateEmployeeAccount, getCurrencies, getEmployeeSalaryHistory, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
+const { createEmployeeAccount, updateProfilePhoto, getPaymentMethods, getEmployeeProbationInfo, updateProbationRecord, createCurrency, createBenifit, updateJobTitle, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, getEmployeeEmergencyContacts, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeBankInfo, updateBankInfo, createPayroll, updatePayroll, deletePayroll, updateCurrentSalary, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateEmployeeAccount, getCurrencies, getEmployeeSalaryHistory, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
 
@@ -38,10 +38,12 @@ const uploadIfImageUrl = (req, res, next) => {
 
 router.post("/create-employee",checkToken, uploadIfImageUrl, createEmployeeAccount);
 router.post("/create-payroll",checkToken, uploadIfImageUrl, createPayroll);
+router.post("/update-probation",checkToken, uploadIfImageUrl, updateProbationRecord);
 router.post("/create-document",checkToken, uploadIfImageUrl, createDocument);
 router.post("/create-emergency-contact",checkToken, createEmergencyContact);
 router.post("/create-dependent",checkToken, createDependent);
 router.post("/create-benefit",checkToken, createBenifit);
+router.post("/create-currency",checkToken, createCurrency);
 router.patch("/update-employee", checkToken, uploadIfImageUrl, updateEmployeeAccount);
 router.patch("/update-document",checkToken, uploadIfImageUrl, updateDocument);
 router.patch("/update-payroll", checkToken, uploadIfImageUrl, updatePayroll);
@@ -63,6 +65,7 @@ router.post("/get-emergency-contacts", checkToken, getEmployeeEmergencyContacts)
 router.post("/get-dependents", checkToken, getEmployeeDependents);
 router.post("/get-benefits", checkToken, getEmployeeBenifits);
 router.post("/get-bank-info", checkToken, getEmployeeBankInfo);
+router.post("/get-probation-info", checkToken, getEmployeeProbationInfo);
 router.post("/get-job-history", checkToken, getEmployeeJobHistory);
 router.post("/get-payroll-history", checkToken, getEmployeePayrollHistory);
 router.post("/get-documents", checkToken, getEmployeeDocuments);
@@ -72,6 +75,7 @@ router.post("/get-payment-methods", checkToken, getPaymentMethods);
 router.post("/get-job-titles", checkToken, getJobTitles);
 router.post("/update-current-salary", checkToken, updateCurrentSalary);
 router.post("/update-bank-info", checkToken, updateBankInfo);
+router.post("/update-job-title", checkToken, updateJobTitle);
 router.post("/update-current-job", checkToken, updateCurrentJob);
 router.post("/get-employee-job-info", checkToken, getEmployeeJobInfo);
 

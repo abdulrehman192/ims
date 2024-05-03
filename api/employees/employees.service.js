@@ -913,6 +913,42 @@ module.exports = {
 
     },
 
+    updateProbationRecord: (req, callback)=> {
+      var data = req.body;
+      const now = new Date();
+      data.modifiedAt = now;
+      if(req.files.length > 0)
+        {
+          req.files.forEach(file => {
+            data[file.fieldname] = req[file.fieldname];
+          });
+        }
+      if(req.query.type == "new"){
+        //add new record
+        pool.query(`insert into employee_probation_info(employeeId, startDate, endDate, evaluationDate, fileUrl, comments) values(?, ?, ?, ?, ?, ?)`, [data.employeeId, data.startDate, data.endDate, data.evaluationDate, data.fileUrl, data.comments], (error, result) => {
+          if(error)
+            {
+                return callback(error);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+      else{
+        pool.query(`update employee_probation_info set startDate = ?, endDate = ?, evaluationDate = ?, fileUrl = ?, comments = ?, modifiedAt = ? where employeeId = ? and probationId = ?`, [data.startDate, data.endDate, data.evaluationDate, data.fileUrl, data.comments, data.modifiedAt, data.employeeId, data.probationId], (error, result) => {
+          if(error)
+            {
+                return callback(error);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+
+    },
+
     deleteEmployee: (req, callback) => {
       var data = req.body;
       // Array to store the queries
@@ -1044,6 +1080,26 @@ getEmployeeSalaryHistory : (data, callback) => {
 getEmployeeBankInfo: (data, callback) => {
 
   pool.query(`select * from employee_bank_info where employeeId = ?`,
+   [ data.employeeId], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          var info = {};
+          if(results.length > 0){
+            info = results[0];
+          }
+          return callback(null, info);
+      }
+          
+   });
+},
+
+getEmployeeProbationInfo: (data, callback) => {
+
+  pool.query(`select * from employee_probation_info where employeeId = ?`,
    [ data.employeeId], 
    (error, results, fields)=> {
       if(error)
@@ -1751,8 +1807,8 @@ getJobTitles : (data, callback) => {
   if(data.search_text){
       text = data.search_text;
   }
-  pool.query(`select * from job_titles`,
-   [], 
+  pool.query(`select * from job_titles where companyId = ?`,
+   [data.companyId], 
    (error, results, fields)=> {
       if(error)
       {
@@ -1875,5 +1931,57 @@ getEmployeeJobInfo : (data, callback) => {
    });
 },
 
+createCurrency : (req, callback) => {
+  var data = req.body;
+  const now = new Date();
+  data.createAt = now;
+  
+  pool.query(`insert into currencies (name, shortName, symbol) values(?,?,?)`,
+  [
+    data.name,
+    data.shortName,
+    data.symbol,
+  ],
+  (error, results, fields) =>{
+    if(error)
+    {
+        return callback(error);
+    }
+    else{
+        return callback(null, results);
+    }
+  }
+);
+},
+
+updateJobTitle : (req, callback) => {
+  var data = req.body;
+  const now = new Date();
+  data.modifiedAt = now;
+  
+  if(req.query.type == "new"){
+    //add new record
+    pool.query(`insert into job_titles(title, description, companyId) values(?, ?, ?)`, [data.title, data.description, data.companyId], (error, result) => {
+      if(error)
+        {
+            return callback(error);
+        }
+        else{
+          return callback(null, result);
+        }
+    });
+  }
+  else{
+    pool.query(`update job_titles set title = ?, description = ?, modifiedAt = ? where id = ?`, [data.title, data.description, data.id, data.modifiedAt], (error, result) => {
+      if(error)
+        {
+            return callback(error);
+        }
+        else{
+          return callback(null, result);
+        }
+    });
+  }
+},
 
 }

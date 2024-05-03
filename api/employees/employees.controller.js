@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, createBenifit, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeEmergencyContacts, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
+const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, getEmployeeProbationInfo, createCurrency, updateJobTitle, updateProbationRecord, createBenifit, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeEmergencyContacts, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -146,6 +146,35 @@ module.exports = {
         });
     },
 
+    updateProbationRecord : (request, response) => {
+        
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        updateProbationRecord(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            
+
+            return response.status(200).json({
+                success : true,
+                message : "employee probation successfully updated",
+                data : results
+            });
+        });
+    },
+
     updateCurrentSalary : (request, response) => {
         
         if(!request.body.employeeId)
@@ -195,6 +224,33 @@ module.exports = {
             return response.status(200).json({
                 success : true,
                 message : "employee bank info successfully updated",
+                data : results
+            });
+        });
+    },
+
+    updateJobTitle : (request, response) => {
+        
+        if(!request.body.companyId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "companyId is required to update data"
+            });
+        }
+
+        updateJobTitle(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "job title successfully updated",
                 data : results
             });
         });
@@ -888,6 +944,13 @@ module.exports = {
 
     getJobTitles : (request, response) => {
         const body = request.body;
+        if(!body.companyId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "companyId is required to get job titles"
+            });
+        }
     
         getJobTitles(body, (error, results) =>{
         if(error)
@@ -958,6 +1021,34 @@ module.exports = {
                 return response.status(200).json({
                     success : true,
                     message : "successfully get bank info",
+                    data : results
+                });
+            }
+       });
+    },
+
+    getEmployeeProbationInfo : (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch probation info"
+            });
+        }
+        getEmployeeProbationInfo(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get probation info",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get probation info",
                     data : results
                 });
             }
@@ -1112,5 +1203,44 @@ module.exports = {
                 });
             }
        });
+    },
+
+    createCurrency : (request, response) => {
+        if(!request.body.name)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "name is required to save data"
+            });
+        }
+        if(!request.body.shortName)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "shortName is required to save data"
+            });
+        }
+        if(!request.body.symbol)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "symbol is required to save data"
+            });
+        }
+        createCurrency(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "currency data is created",
+                data : results
+            });
+        });
     },
 };
