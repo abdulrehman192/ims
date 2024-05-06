@@ -949,6 +949,37 @@ module.exports = {
 
     },
 
+    updateOffBoardRecord: (req, callback)=> {
+      var data = req.body;
+      const now = new Date();
+      data.modifiedAt = now;
+    
+      if(req.query.type == "new"){
+        //add new record
+        pool.query(`insert into employee_offboard_info(employeeId, resignationDate, lastWorkingDate, reason, leaveNote) values(?, ?, ?, ?, ?)`, [data.employeeId, data.resignationDate, data.lastWorkingDate, data.reason, data.leaveNote], (error, result) => {
+          if(error)
+            {
+                return callback(error);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+      else{
+        pool.query(`update employee_offboard_info set resignationDate = ?, lastWorkingDate = ?, reason = ?, leaveNote = ?, modifiedAt = ? where employeeId = ? and offboardId = ?`, [data.resignationDate, data.lastWorkingDate, data.reason, data.leaveNote, data.modifiedAt, data.employeeId, data.offboardId], (error, result) => {
+          if(error)
+            {
+                return callback(error);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+
+    },
+
     deleteEmployee: (req, callback) => {
       var data = req.body;
       // Array to store the queries
@@ -1077,6 +1108,25 @@ getEmployeeSalaryHistory : (data, callback) => {
    });
 },
 
+getLeaveRequests : (data, callback) => {
+  var text = "";
+  if(data.search_text){
+      text = data.search_text;
+  }
+  pool.query(`SELECT leaveId, l.employeeId, type, message, startDate, endDate, l.status, fileUrl, l.companyId, l.createAt, l.modifiedAt FROM employee_leave_requests l left join employees e on e.employeeId = l.employeeId where (e.firstName like ? or e.lastName like ? or l.type like ? or l.status like ?) and l.companyId = ?`,
+   [`%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, data.companyId], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          return callback(null, results);
+      }
+          
+   });
+},
+
 getEmployeeBankInfo: (data, callback) => {
 
   pool.query(`select * from employee_bank_info where employeeId = ?`,
@@ -1100,6 +1150,26 @@ getEmployeeBankInfo: (data, callback) => {
 getEmployeeProbationInfo: (data, callback) => {
 
   pool.query(`select * from employee_probation_info where employeeId = ?`,
+   [ data.employeeId], 
+   (error, results, fields)=> {
+      if(error)
+      {
+          return callback(error);
+      }
+      else{
+          var info = {};
+          if(results.length > 0){
+            info = results[0];
+          }
+          return callback(null, info);
+      }
+          
+   });
+},
+
+getEmployeeOffBoardInfo: (data, callback) => {
+
+  pool.query(`select * from employee_offboard_info where employeeId = ?`,
    [ data.employeeId], 
    (error, results, fields)=> {
       if(error)
@@ -1410,6 +1480,88 @@ updatePayroll : (req, callback) => {
 deletePayroll: (data, callback) => {
   pool.query(`delete from employee_payroll_info where payrollId = ?`,
    [data.payrollId], 
+   (error, results, fields)=> {
+      if(error)
+          {
+              return callback(error);
+          }
+      return callback(null, results);
+   });
+},
+
+createLeaveRequest : (req, callback) => {
+  var data = req.body;
+  const now = new Date();
+  data.createAt = now;
+  if(req.files.length > 0)
+  {
+    req.files.forEach(file => {
+      data[file.fieldname] = req[file.fieldname];
+    });
+  }
+
+
+  pool.query(`insert into employee_leave_requests ( employeeId, type, message, startDate, endDate, status, fileUrl, companyId) values(?,?,?,?,?,?,?,?)`,
+  [
+    data.employeeId,
+    data.type,
+    data.message,
+    data.startDate,
+    data.endDate,
+    data.status,
+    data.fileUrl,
+    data.companyId,
+  ],
+  (error, results, fields) =>{
+    if(error)
+    {
+        return callback(error);
+    }
+    else{
+        return callback(null, results);
+    }
+  }
+);
+},
+
+updateLeaveRequest : (req, callback) => {
+  var data = req.body;
+  const now = new Date();
+  data.modifiedAt = now;
+  if(req.files.length > 0)
+  {
+    req.files.forEach(file => {
+      data[file.fieldname] = req[file.fieldname];
+    });
+  }
+
+  let sql = 'UPDATE employee_leave_requests SET ';
+        const setClauses = [];
+        
+        for (const key in data) {
+            if (data[key] !== null) {
+            setClauses.push(`${key} = ?`);
+            }
+        }
+        sql += setClauses.join(', '); 
+        sql += ' where employeeId = ? and leaveId = ?'; 
+        const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.leaveId];
+
+        pool.query(sql, values, 
+            (error, results, fields)=> {
+                if(error)
+                {
+                    return callback(error);
+                }
+                else{
+                    return callback(null, results);
+                }
+        });
+},
+
+deleteLeaveRequest: (data, callback) => {
+  pool.query(`delete from employee_leave_requests where leaveId = ?`,
+   [data.leaveId], 
    (error, results, fields)=> {
       if(error)
           {

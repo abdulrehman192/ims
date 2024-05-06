@@ -217,6 +217,7 @@ module.exports = {
         userLogin(body, (error, results) => {
             if(error)
             {
+                console.log(error);
                 return response.status(500).json({
                     success : false,
                     message : "Error while login to system",

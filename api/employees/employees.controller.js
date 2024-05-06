@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, getEmployeeProbationInfo, createCurrency, updateJobTitle, updateProbationRecord, createBenifit, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeEmergencyContacts, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
+const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, createLeaveRequest, updateLeaveRequest, deleteLeaveRequest, getLeaveRequests, updateOffBoardRecord, getEmployeeOffBoardInfo, getEmployeeProbationInfo, createCurrency, updateJobTitle, updateProbationRecord, createBenifit, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeEmergencyContacts, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -170,6 +170,35 @@ module.exports = {
             return response.status(200).json({
                 success : true,
                 message : "employee probation successfully updated",
+                data : results
+            });
+        });
+    },
+
+    updateOffBoardRecord : (request, response) => {
+        
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        updateOffBoardRecord(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            
+
+            return response.status(200).json({
+                success : true,
+                message : "employee off-board successfully updated",
                 data : results
             });
         });
@@ -363,6 +392,92 @@ module.exports = {
             return response.status(200).json({
                 success : true,
                 message : "employee payroll data is deleted",
+                data : results
+            });
+        });
+    },
+
+
+    createLeaveRequest : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to save data"
+            });
+        }
+        createLeaveRequest(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee leave request data is created",
+                data : results
+            });
+        });
+    },
+
+
+    updateLeaveRequest : (request, response) => {
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        if(!request.body.leaveId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "leaveId is required to update data"
+            });
+        }
+        updateLeaveRequest(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee leave request data is updated",
+                data : results
+            });
+        });
+    },
+
+    deleteLeaveRequest : (request, response) => {
+    
+        if(!request.body.leaveId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "leaveId is required to delete data"
+            });
+        }
+        deleteLeaveRequest(request.body, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee leave request data is deleted",
                 data : results
             });
         });
@@ -999,6 +1114,34 @@ module.exports = {
        });
     },
 
+    getLeaveRequests : (request, response) => {
+        const body = request.body;
+        if(!body.companyId)
+            {
+                return response.status(400).json({
+                    success : false,
+                    message: "companyId is required to fetch leave requests"
+                });
+            }
+        getLeaveRequests(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get leave requests",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get leave requests",
+                    data : results
+                });
+            }
+       });
+    },
+
     getEmployeeBankInfo : (request, response) => {
         const body = request.body;
         if(!body.employeeId)
@@ -1049,6 +1192,34 @@ module.exports = {
                 return response.status(200).json({
                     success : true,
                     message : "successfully get probation info",
+                    data : results
+                });
+            }
+       });
+    },
+
+    getEmployeeOffBoardInfo : (request, response) => {
+        const body = request.body;
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch off-board info"
+            });
+        }
+        getEmployeeOffBoardInfo(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get off-board info",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get off-board info",
                     data : results
                 });
             }
