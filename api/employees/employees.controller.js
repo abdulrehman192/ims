@@ -443,6 +443,7 @@ module.exports = {
         updateLeaveRequest(request, (error, results) => {
             if(error)
             {
+                console.log(error);
                 return response.status(500).json({
                     success : false,
                     message : error
