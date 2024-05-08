@@ -441,6 +441,7 @@ function parseEmployeeJson(a){
    let lineManager = null;
    let user = null;
    let role = null;
+   let jobTimeline = [];
 
    if(a.lineManagerId){
     lineManager = {
@@ -449,6 +450,17 @@ function parseEmployeeJson(a){
       lastName : a.lineManagerLastName,
       photoUrl : a.lineManagerPhoto
     };
+   }
+
+   if(a.jobTitle){
+    var j = {
+      jobTitleId : a.jobTitleId,
+      jobTitle : {
+        id : a.jobTitleId,
+        title : a.jobTitle
+      }
+    };
+    jobTimeline.push(j);
    }
 
    if(a.officeId){
@@ -523,10 +535,37 @@ function parseEmployeeJson(a){
     user : user,
     department: department,
     office : office,
-    lineManager : lineManager
+    lineManager : lineManager,
+    jobTimeline : jobTimeline
    };
 
    return employee;
+}
+
+
+function parseAttendanceJson(a){
+  var employee = {};
+  var markBy = {};
+  if(a.markById){
+    markBy = {
+      employeeId : a.markById,
+      firstName : a.markByFirstName,
+      lastName : a.markByLastName
+    };
+  }
+
+  if(a.employeeId)
+  return {
+    attendanceId : a.attendanceId,
+    employeeId : a.employeeId,
+    employee : employee,
+    markById : a.markById,
+    markBy : markBy,
+    status: a.status,
+    dateTime : a.dateTime,
+    createAt : a.createAt,
+    modifiedAt : a.modifiedAt
+  };
 }
 
 function parseOneEmployeeJson(a){
@@ -580,15 +619,32 @@ e.modifiedAt,
 u.roleId, 
 role, 
 permissions,
-u.password
+u.password,
+t.id as jobTitleId,
+t.title as jobTitle
 
 from employees e
 left join offices o on e.officeId = o.officeId
 left join departments d on e.departmentId = d.departmentId
 left join users u on e.employeeId = u.employeeId
 left join user_roles r on u.roleId = r.roleId
-left join employees l on e.lineManagerId = l.employeeId`;
+left join employees l on e.lineManagerId = l.employeeId
+left join employee_job_info j on j.employeeId = e.employeeId
+left join job_titles t on t.id = j.jobTitleId`;
 
+
+var attendanceSql = `
+SELECT 
+attendanceId, 
+a.employeeId,
+markById, 
+a.status, 
+dateTime, 
+a.createAt, 
+a.modifiedAt
+from employee_attendance a
+left join employees e on a.employeeId = e.employeeId
+`;
 
 module.exports = {
     create : (req, callback) => {
@@ -738,7 +794,6 @@ module.exports = {
                 {
                     if(error)
                     {
-                        console.log(error);
                         return callback(error);
                     }
                     else{
@@ -1023,7 +1078,7 @@ module.exports = {
               // Error occurred while executing queries
               callback(error);
           });
-  },
+    },
   
 
     getEmployeeById : (data, callback) =>{
@@ -1055,7 +1110,7 @@ module.exports = {
       if(data.search_text){
           text = data.search_text;
       }
-      pool.query(`${employeeSql} where (e.firstName like ? or e.lastName like ? or e.gender like ? or e.idNo like ? or e.nationality like ? or e.maritalStatus like ? or e.email like ? or e.mobile like ? or e.country like ? or e.state like ? or e.city like ? or e.address like ? or e.status like ? or e.passportNo like ? or e.visaType like ? or e.visaNo like ? or o.name like ? or d.name like ? or r.role like ?) and e.companyId = ?`,
+      pool.query(`${employeeSql} where (e.firstName like ? or e.lastName like ? or e.gender like ? or e.idNo like ? or e.nationality like ? or e.maritalStatus like ? or e.email like ? or e.mobile like ? or e.country like ? or e.state like ? or e.city like ? or e.address like ? or e.status like ? or e.passportNo like ? or e.visaType like ? or e.visaNo like ? or o.name like ? or d.name like ? or r.role like ?) and e.companyId = ? group by e.employeeId`,
        [`%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, data.companyId], 
        (error, results, fields)=> {
           if(error)
@@ -1071,9 +1126,75 @@ module.exports = {
           }
               
        });
-  },
+    },
 
-  getUserRoles : (data, callback) => {
+    getAllAttendance : (data, callback) => {
+      var text = "";
+      if(data.search_text){
+          text = data.search_text;
+      } 
+      pool.query(`${attendanceSql} where (e.firstName like ? or e.lastName like ? or a.status like ?) and e.companyId = ? and DATE(a.dateTime) =  ?`,
+       [`%${text}%`, `%${text}%`,`%${text}%`, data.companyId, data.date], 
+       (error, results, fields)=> {
+          if(error)
+          {
+              return callback(error);
+          }
+          else{
+              return callback(null, results);
+          }
+              
+       });
+    },
+
+    getEmployeeAttendance : (data, callback) => {
+      
+      pool.query(`select * from employee_attendance where employeeId = ? and DATE(dateTime) between ? and ? order by dateTime`,
+       [data.employeeId, data.fromDate, data.toDate], 
+       (error, results, fields)=> {
+          if(error)
+          {
+              return callback(error);
+          }
+          else{
+              return callback(null, results);
+          }
+              
+       });
+    },
+
+    markAttendance: (req, callback)=> {
+      var data = req.body;
+      const now = new Date();
+      data.modifiedAt = now;
+      
+      if(!data.attendanceId){
+        //add new record
+        pool.query(`insert into employee_attendance(employeeId, markById, status, dateTime) values(?, ?, ?, ?)`, [data.employeeId, data.markById, data.status, data.dateTime], (error, result) => {
+          if(error)
+            {
+                return callback(error);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+      else{
+        pool.query(`update employee_attendance set status = ?, modifiedAt = ? where employeeId = ? and attendanceId = ?`, [data.status, data.modifiedAt, data.attendanceId, data.attendanceId], (error, result) => {
+          if(error)
+            {
+                return callback(error);
+            }
+            else{
+              return callback(null, result);
+            }
+        });
+      }
+
+    },
+
+    getUserRoles : (data, callback) => {
     var text = "";
     if(data.search_text){
         text = data.search_text;
@@ -1090,9 +1211,9 @@ module.exports = {
         }
             
      });
-},
+    },
 
-getEmployeeSalaryHistory : (data, callback) => {
+    getEmployeeSalaryHistory : (data, callback) => {
 
   pool.query(`select * from employee_salary_info where employeeId = ?`,
    [ data.employeeId], 
@@ -1106,470 +1227,470 @@ getEmployeeSalaryHistory : (data, callback) => {
       }
           
    });
-},
+    },
 
-getLeaveRequests : (data, callback) => {
-  var text = "";
-  if(data.search_text){
-      text = data.search_text;
-  }
-  pool.query(`SELECT leaveId, l.employeeId, type, message, startDate, endDate, l.status, fileUrl, l.companyId, l.createAt, l.modifiedAt FROM employee_leave_requests l left join employees e on e.employeeId = l.employeeId where (e.firstName like ? or e.lastName like ? or l.type like ? or l.status like ?) and l.companyId = ?`,
-   [`%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, data.companyId], 
-   (error, results, fields)=> {
-      if(error)
-      {
-          return callback(error);
+    getLeaveRequests : (data, callback) => {
+      var text = "";
+      if(data.search_text){
+          text = data.search_text;
       }
-      else{
+      pool.query(`SELECT leaveId, l.employeeId, type, message, startDate, endDate, l.status, fileUrl, l.companyId, l.createAt, l.modifiedAt FROM employee_leave_requests l left join employees e on e.employeeId = l.employeeId where (e.firstName like ? or e.lastName like ? or l.type like ? or l.status like ?) and l.companyId = ?`,
+      [`%${text}%`, `%${text}%`, `%${text}%`, `%${text}%`, data.companyId], 
+      (error, results, fields)=> {
+          if(error)
+          {
+              return callback(error);
+          }
+          else{
+              return callback(null, results);
+          }
+              
+      });
+    },
+
+    getEmployeeBankInfo: (data, callback) => {
+
+      pool.query(`select * from employee_bank_info where employeeId = ?`,
+      [ data.employeeId], 
+      (error, results, fields)=> {
+          if(error)
+          {
+              return callback(error);
+          }
+          else{
+              var info = {};
+              if(results.length > 0){
+                info = results[0];
+              }
+              return callback(null, info);
+          }
+              
+      });
+    },
+
+    getEmployeeProbationInfo: (data, callback) => {
+
+      pool.query(`select * from employee_probation_info where employeeId = ?`,
+      [ data.employeeId], 
+      (error, results, fields)=> {
+          if(error)
+          {
+              return callback(error);
+          }
+          else{
+              var info = {};
+              if(results.length > 0){
+                info = results[0];
+              }
+              return callback(null, info);
+          }
+              
+      });
+    },
+
+    getEmployeeOffBoardInfo: (data, callback) => {
+
+      pool.query(`select * from employee_offboard_info where employeeId = ?`,
+      [ data.employeeId], 
+      (error, results, fields)=> {
+          if(error)
+          {
+              return callback(error);
+          }
+          else{
+              var info = {};
+              if(results.length > 0){
+                info = results[0];
+              }
+              return callback(null, info);
+          }
+              
+      });
+    },
+
+    getEmployeeJobHistory : (data, callback) => {
+
+      pool.query(`
+      select 
+      jobInfoId,
+      employeeId, 
+      jobTitleId, 
+      joinDate, 
+      j.departmentId, 
+      j.officeId, 
+      positionType, 
+      employmentType, 
+      isCurrent, 
+      jobType, 
+      j.createAt, 
+      j.modifiedAt,
+      id, 
+      title, 
+      t.description, 
+      t.createAt as titleCreateAt, 
+      t.modifiedAt as titleModifiedAt,  
+      o.name as office, 
+      d.name as department
+      from 
+      employee_job_info j 
+      left join job_titles t on t.id = j.jobTitleId
+      left join offices o on o.officeId = j.officeId
+      left join departments d on d.departmentId = j.departmentId
+      
+      where j.employeeId = ?`,
+      [ data.employeeId], 
+      (error, results, fields)=> {
+          if(error)
+          {
+              return callback(error);
+          }
+          else{
+              var history = [];
+              for(var d in results){
+                var item = results[d];
+                var job = null;
+                var jobTitle = {
+                  id: item.id,
+                  title: item.title,
+                  description : item.description,
+                  createAt: item.titleCreateAt,
+                  modifiedAt : item.titleModifiedeAt
+                };
+                var office = {
+                  officeId: item.officeId,
+                  name : item.office
+                };
+                var department = {
+                  departmentId : item.departmentId,
+                  name : item.department
+                };
+
+                job = {
+                  jobInfoId : item.jobInfoId,
+                  jobTitle : jobTitle,
+                  office : office,
+                  department : department,
+                  employeeId: item.employeeId,
+                  departmentId: item.departmentId,
+                  officeId: item.officeId,
+                  positionType: item.positionType,
+                  jobTitleId: item.jobTitleId,
+                  isCurrent: item.isCurrent,
+                  employmentType: item.employmentType,
+                  joinDate: item.joinDate,
+                  jobType: item.jobType,
+                  createAt: item.createAt,
+                  modifiedAt: item.modifiedAt,
+                };
+
+                history.push(job);
+              }
+              return callback(null, history);
+          }
+              
+      });
+    },
+
+    getEmployeePayrollHistory : (data, callback) => {
+
+      pool.query(`
+      SELECT
+      payrollId, 
+      p.salaryId, 
+      fileUrl, 
+      paidAmount, 
+      cutAmount, 
+      cutReason, 
+      paidDate, 
+      paymentMethod,
+      p.createAt, 
+      p.modifiedAt,
+      p.jobInfoId,
+      p.employeeId, 
+      jobTitleId, 
+      joinDate, 
+      j.departmentId, 
+      j.officeId, 
+      positionType, 
+      employmentType, 
+      isCurrent, 
+      jobType, 
+      j.createAt, 
+      j.modifiedAt,
+      id, 
+      title, 
+      t.description, 
+      t.createAt as titleCreateAt, 
+      t.modifiedAt as titleModifiedAt,  
+      o.name as office, 
+      d.name as department,
+      effectiveStart, 
+      effectiveEnd, 
+      basicSalary, 
+      transportAllowance, 
+      houseRentAllowance, 
+      netSalary, 
+      reason, 
+      currency, 
+      current 
+      FROM 
+      employee_payroll_info p 
+      left join employee_job_info j on j.jobInfoId = p.jobInfoId
+      left join job_titles t on t.id = j.jobTitleId
+      left join offices o on o.officeId = j.officeId
+      left join departments d on d.departmentId = j.departmentId
+      left join employee_salary_info s on s.salaryId = p.salaryId
+      where p.employeeId = ?`,
+      [ data.employeeId], 
+      (error, results, fields)=> {
+          if(error)
+          {
+              return callback(error);
+          }
+          else{
+              var history = [];
+              for(var d in results){
+                var item = results[d];
+                var job = null;
+                var salaryInfo = null;
+                var payroll = null;
+                var jobTitle = {
+                  id: item.id,
+                  title: item.title,
+                  description : item.description,
+                  createAt: item.titleCreateAt,
+                  modifiedAt : item.titleModifiedeAt
+                };
+                var office = {
+                  officeId: item.officeId,
+                  name : item.office
+                };
+                var department = {
+                  departmentId : item.departmentId,
+                  name : item.department
+                };
+
+                job = {
+                  jobInfoId : item.jobTitle,
+                  jobTitle : jobTitle,
+                  office : office,
+                  department : department,
+                  employeeId: item.employeeId,
+                  departmentId: item.departmentId,
+                  officeId: item.officeId,
+                  positionType: item.positionType,
+                  jobTitleId: item.jobTitleId,
+                  isCurrent: item.isCurrent,
+                  employmentType: item.employmentType,
+                  joinDate: item.joinDate,
+                  jobType: item.jobType,
+                  createAt: item.createAt,
+                  modifiedAt: item.modifiedAt,
+                };
+
+                salaryInfo = {
+                  salaryId  : item.salaryId,
+                  effectiveStart : item.effectiveStart,
+                  effectiveEnd : item.effectiveEnd,
+                  basicSalary: item.basicSalary,
+                  transportAllowance : item.transportAllowance,
+                  houseRentAllowance : item.houseRentAllowance,
+                  netSalary : item.netSalary,
+                  reason : item.reason,
+                  currency : item.currency,
+                  current: item.current
+                };
+
+                payroll = {
+                  jobInfo : job,
+                  salaryInfo: salaryInfo,
+                  payrollId : item.payrollId,
+                  fileUrl : item.fileUrl,
+                  paidAmount : item.paidAmount,
+                  cutAmount : item.cutAmount,
+                  employeeId : item.employeeId,
+                  jobInfoId : item.jobInfoId,
+                  salaryId : item.salaryId,
+                  cutReason : item.cutReason,
+                  paidDate: item.paidDate,
+                  paymentMethod: item.paymentMethod,
+                  createAt : item.createAt,
+                  modifiedAt : item.modifiedAt
+
+                };
+
+                history.push(payroll);
+              }
+              return callback(null, history);
+          }
+              
+      });
+    },
+
+    createPayroll : (req, callback) => {
+      var data = req.body;
+      const now = new Date();
+      data.createAt = now;
+      if(req.files.length > 0)
+      {
+        req.files.forEach(file => {
+          data[file.fieldname] = req[file.fieldname];
+        });
+      }
+
+
+      pool.query(`insert into employee_payroll_info ( employeeId, jobInfoId, salaryId, fileUrl, paidAmount, cutAmount, cutReason, paidDate, paymentMethod) values(?,?,?,?,?,?,?,?,?)`,
+      [
+        data.employeeId,
+        data.jobInfoId,
+        data.salaryId,
+        data.fileUrl,
+        data.paidAmount,
+        data.cutAmount,
+        data.cutReason,
+        data.paidDate,
+        data.paymentMethod,
+      ],
+      (error, results, fields) =>{
+        if(error)
+        {
+            return callback(error);
+        }
+        else{
+            return callback(null, results);
+        }
+      }
+    );
+    },
+
+    updatePayroll : (req, callback) => {
+      var data = req.body;
+      const now = new Date();
+      data.modifiedAt = now;
+      if(req.files.length > 0)
+      {
+        req.files.forEach(file => {
+          data[file.fieldname] = req[file.fieldname];
+        });
+      }
+
+      let sql = 'UPDATE employee_payroll_info SET ';
+            const setClauses = [];
+            
+            for (const key in data) {
+                if (data[key] !== null) {
+                setClauses.push(`${key} = ?`);
+                }
+            }
+            sql += setClauses.join(', '); 
+            sql += ' where employeeId = ? and payrollId = ?'; 
+            const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.payrollId];
+
+            pool.query(sql, values, 
+                (error, results, fields)=> {
+                    if(error)
+                    {
+                        return callback(error);
+                    }
+                    else{
+                        return callback(null, results);
+                    }
+            });
+    },
+
+    deletePayroll: (data, callback) => {
+      pool.query(`delete from employee_payroll_info where payrollId = ?`,
+      [data.payrollId], 
+      (error, results, fields)=> {
+          if(error)
+              {
+                  return callback(error);
+              }
           return callback(null, results);
-      }
-          
-   });
-},
+      });
+    },
 
-getEmployeeBankInfo: (data, callback) => {
-
-  pool.query(`select * from employee_bank_info where employeeId = ?`,
-   [ data.employeeId], 
-   (error, results, fields)=> {
-      if(error)
+    createLeaveRequest : (req, callback) => {
+      var data = req.body;
+      const now = new Date();
+      data.createAt = now;
+      if(req.files.length > 0)
       {
-          return callback(error);
-      }
-      else{
-          var info = {};
-          if(results.length > 0){
-            info = results[0];
-          }
-          return callback(null, info);
-      }
-          
-   });
-},
-
-getEmployeeProbationInfo: (data, callback) => {
-
-  pool.query(`select * from employee_probation_info where employeeId = ?`,
-   [ data.employeeId], 
-   (error, results, fields)=> {
-      if(error)
-      {
-          return callback(error);
-      }
-      else{
-          var info = {};
-          if(results.length > 0){
-            info = results[0];
-          }
-          return callback(null, info);
-      }
-          
-   });
-},
-
-getEmployeeOffBoardInfo: (data, callback) => {
-
-  pool.query(`select * from employee_offboard_info where employeeId = ?`,
-   [ data.employeeId], 
-   (error, results, fields)=> {
-      if(error)
-      {
-          return callback(error);
-      }
-      else{
-          var info = {};
-          if(results.length > 0){
-            info = results[0];
-          }
-          return callback(null, info);
-      }
-          
-   });
-},
-
-getEmployeeJobHistory : (data, callback) => {
-
-  pool.query(`
-  select 
-  jobInfoId,
-  employeeId, 
-  jobTitleId, 
-  joinDate, 
-  j.departmentId, 
-  j.officeId, 
-  positionType, 
-  employmentType, 
-  isCurrent, 
-  jobType, 
-  j.createAt, 
-  j.modifiedAt,
-  id, 
-  title, 
-  t.description, 
-  t.createAt as titleCreateAt, 
-  t.modifiedAt as titleModifiedAt,  
-  o.name as office, 
-  d.name as department
-  from 
-  employee_job_info j 
-  left join job_titles t on t.id = j.jobTitleId
-  left join offices o on o.officeId = j.officeId
-  left join departments d on d.departmentId = j.departmentId
-  
-  where j.employeeId = ?`,
-   [ data.employeeId], 
-   (error, results, fields)=> {
-      if(error)
-      {
-          return callback(error);
-      }
-      else{
-           var history = [];
-           for(var d in results){
-            var item = results[d];
-            var job = null;
-            var jobTitle = {
-              id: item.id,
-              title: item.title,
-              description : item.description,
-              createAt: item.titleCreateAt,
-              modifiedAt : item.titleModifiedeAt
-            };
-            var office = {
-              officeId: item.officeId,
-              name : item.office
-            };
-            var department = {
-              departmentId : item.departmentId,
-              name : item.department
-            };
-
-            job = {
-              jobInfoId : item.jobInfoId,
-              jobTitle : jobTitle,
-              office : office,
-              department : department,
-              employeeId: item.employeeId,
-              departmentId: item.departmentId,
-              officeId: item.officeId,
-              positionType: item.positionType,
-              jobTitleId: item.jobTitleId,
-              isCurrent: item.isCurrent,
-              employmentType: item.employmentType,
-              joinDate: item.joinDate,
-              jobType: item.jobType,
-              createAt: item.createAt,
-              modifiedAt: item.modifiedAt,
-            };
-
-            history.push(job);
-           }
-          return callback(null, history);
-      }
-          
-   });
-},
-
-getEmployeePayrollHistory : (data, callback) => {
-
-  pool.query(`
-  SELECT
-  payrollId, 
-  p.salaryId, 
-  fileUrl, 
-  paidAmount, 
-  cutAmount, 
-  cutReason, 
-  paidDate, 
-  paymentMethod,
-  p.createAt, 
-  p.modifiedAt,
-  p.jobInfoId,
-  p.employeeId, 
-  jobTitleId, 
-  joinDate, 
-  j.departmentId, 
-  j.officeId, 
-  positionType, 
-  employmentType, 
-  isCurrent, 
-  jobType, 
-  j.createAt, 
-  j.modifiedAt,
-  id, 
-  title, 
-  t.description, 
-  t.createAt as titleCreateAt, 
-  t.modifiedAt as titleModifiedAt,  
-  o.name as office, 
-  d.name as department,
-  effectiveStart, 
-  effectiveEnd, 
-  basicSalary, 
-  transportAllowance, 
-  houseRentAllowance, 
-  netSalary, 
-  reason, 
-  currency, 
-  current 
-  FROM 
-  employee_payroll_info p 
-  left join employee_job_info j on j.jobInfoId = p.jobInfoId
-  left join job_titles t on t.id = j.jobTitleId
-  left join offices o on o.officeId = j.officeId
-  left join departments d on d.departmentId = j.departmentId
-  left join employee_salary_info s on s.salaryId = p.salaryId
-  where p.employeeId = ?`,
-   [ data.employeeId], 
-   (error, results, fields)=> {
-      if(error)
-      {
-          return callback(error);
-      }
-      else{
-           var history = [];
-           for(var d in results){
-            var item = results[d];
-            var job = null;
-            var salaryInfo = null;
-            var payroll = null;
-            var jobTitle = {
-              id: item.id,
-              title: item.title,
-              description : item.description,
-              createAt: item.titleCreateAt,
-              modifiedAt : item.titleModifiedeAt
-            };
-            var office = {
-              officeId: item.officeId,
-              name : item.office
-            };
-            var department = {
-              departmentId : item.departmentId,
-              name : item.department
-            };
-
-            job = {
-              jobInfoId : item.jobTitle,
-              jobTitle : jobTitle,
-              office : office,
-              department : department,
-              employeeId: item.employeeId,
-              departmentId: item.departmentId,
-              officeId: item.officeId,
-              positionType: item.positionType,
-              jobTitleId: item.jobTitleId,
-              isCurrent: item.isCurrent,
-              employmentType: item.employmentType,
-              joinDate: item.joinDate,
-              jobType: item.jobType,
-              createAt: item.createAt,
-              modifiedAt: item.modifiedAt,
-            };
-
-            salaryInfo = {
-              salaryId  : item.salaryId,
-              effectiveStart : item.effectiveStart,
-              effectiveEnd : item.effectiveEnd,
-              basicSalary: item.basicSalary,
-              transportAllowance : item.transportAllowance,
-              houseRentAllowance : item.houseRentAllowance,
-              netSalary : item.netSalary,
-              reason : item.reason,
-              currency : item.currency,
-              current: item.current
-            };
-
-            payroll = {
-              jobInfo : job,
-              salaryInfo: salaryInfo,
-              payrollId : item.payrollId,
-              fileUrl : item.fileUrl,
-              paidAmount : item.paidAmount,
-              cutAmount : item.cutAmount,
-              employeeId : item.employeeId,
-              jobInfoId : item.jobInfoId,
-              salaryId : item.salaryId,
-              cutReason : item.cutReason,
-              paidDate: item.paidDate,
-              paymentMethod: item.paymentMethod,
-              createAt : item.createAt,
-              modifiedAt : item.modifiedAt
-
-            };
-
-            history.push(payroll);
-           }
-          return callback(null, history);
-      }
-          
-   });
-},
-
-createPayroll : (req, callback) => {
-  var data = req.body;
-  const now = new Date();
-  data.createAt = now;
-  if(req.files.length > 0)
-  {
-    req.files.forEach(file => {
-      data[file.fieldname] = req[file.fieldname];
-    });
-  }
-
-
-  pool.query(`insert into employee_payroll_info ( employeeId, jobInfoId, salaryId, fileUrl, paidAmount, cutAmount, cutReason, paidDate, paymentMethod) values(?,?,?,?,?,?,?,?,?)`,
-  [
-    data.employeeId,
-    data.jobInfoId,
-    data.salaryId,
-    data.fileUrl,
-    data.paidAmount,
-    data.cutAmount,
-    data.cutReason,
-    data.paidDate,
-    data.paymentMethod,
-  ],
-  (error, results, fields) =>{
-    if(error)
-    {
-        return callback(error);
-    }
-    else{
-        return callback(null, results);
-    }
-  }
-);
-},
-
-updatePayroll : (req, callback) => {
-  var data = req.body;
-  const now = new Date();
-  data.modifiedAt = now;
-  if(req.files.length > 0)
-  {
-    req.files.forEach(file => {
-      data[file.fieldname] = req[file.fieldname];
-    });
-  }
-
-  let sql = 'UPDATE employee_payroll_info SET ';
-        const setClauses = [];
-        
-        for (const key in data) {
-            if (data[key] !== null) {
-            setClauses.push(`${key} = ?`);
-            }
-        }
-        sql += setClauses.join(', '); 
-        sql += ' where employeeId = ? and payrollId = ?'; 
-        const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.payrollId];
-
-        pool.query(sql, values, 
-            (error, results, fields)=> {
-                if(error)
-                {
-                    return callback(error);
-                }
-                else{
-                    return callback(null, results);
-                }
+        req.files.forEach(file => {
+          data[file.fieldname] = req[file.fieldname];
         });
-},
-
-deletePayroll: (data, callback) => {
-  pool.query(`delete from employee_payroll_info where payrollId = ?`,
-   [data.payrollId], 
-   (error, results, fields)=> {
-      if(error)
-          {
-              return callback(error);
-          }
-      return callback(null, results);
-   });
-},
-
-createLeaveRequest : (req, callback) => {
-  var data = req.body;
-  const now = new Date();
-  data.createAt = now;
-  if(req.files.length > 0)
-  {
-    req.files.forEach(file => {
-      data[file.fieldname] = req[file.fieldname];
-    });
-  }
+      }
 
 
-  pool.query(`insert into employee_leave_requests ( employeeId, type, message, startDate, endDate, status, fileUrl, companyId) values(?,?,?,?,?,?,?,?)`,
-  [
-    data.employeeId,
-    data.type,
-    data.message,
-    data.startDate,
-    data.endDate,
-    data.status,
-    data.fileUrl,
-    data.companyId,
-  ],
-  (error, results, fields) =>{
-    if(error)
-    {
-        return callback(error);
-    }
-    else{
-        return callback(null, results);
-    }
-  }
-);
-},
-
-updateLeaveRequest : (req, callback) => {
-  var data = req.body;
-  const now = new Date();
-  data.modifiedAt = now;
-  if(req.files.length > 0)
-  {
-    req.files.forEach(file => {
-      data[file.fieldname] = req[file.fieldname];
-    });
-  }
-
-  let sql = 'UPDATE employee_leave_requests SET ';
-        const setClauses = [];
-        
-        for (const key in data) {
-            if (data[key] !== null) {
-            setClauses.push(`${key} = ?`);
-            }
+      pool.query(`insert into employee_leave_requests ( employeeId, type, message, startDate, endDate, status, fileUrl, companyId) values(?,?,?,?,?,?,?,?)`,
+      [
+        data.employeeId,
+        data.type,
+        data.message,
+        data.startDate,
+        data.endDate,
+        data.status,
+        data.fileUrl,
+        data.companyId,
+      ],
+      (error, results, fields) =>{
+        if(error)
+        {
+            return callback(error);
         }
-        sql += setClauses.join(', '); 
-        sql += ' where employeeId = ? and leaveId = ?'; 
-        const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.leaveId];
+        else{
+            return callback(null, results);
+        }
+      }
+    );
+    },
 
-        pool.query(sql, values, 
-            (error, results, fields)=> {
-                if(error)
-                {
-                    return callback(error);
-                }
-                else{
-                    return callback(null, results);
-                }
+    updateLeaveRequest : (req, callback) => {
+      var data = req.body;
+      const now = new Date();
+      data.modifiedAt = now;
+      if(req.files.length > 0)
+      {
+        req.files.forEach(file => {
+          data[file.fieldname] = req[file.fieldname];
         });
-},
+      }
 
-deleteLeaveRequest: (data, callback) => {
-  pool.query(`delete from employee_leave_requests where leaveId = ?`,
-   [data.leaveId], 
-   (error, results, fields)=> {
-      if(error)
-          {
-              return callback(error);
-          }
-      return callback(null, results);
-   });
-},
+      let sql = 'UPDATE employee_leave_requests SET ';
+            const setClauses = [];
+            
+            for (const key in data) {
+                if (data[key] !== null) {
+                setClauses.push(`${key} = ?`);
+                }
+            }
+            sql += setClauses.join(', '); 
+            sql += ' where employeeId = ? and leaveId = ?'; 
+            const values = [...Object.values(data).filter(val => val !== null), data.employeeId, data.leaveId];
+
+            pool.query(sql, values, 
+                (error, results, fields)=> {
+                    if(error)
+                    {
+                        return callback(error);
+                    }
+                    else{
+                        return callback(null, results);
+                    }
+            });
+    },
+
+    deleteLeaveRequest: (data, callback) => {
+      pool.query(`delete from employee_leave_requests where leaveId = ?`,
+      [data.leaveId], 
+      (error, results, fields)=> {
+          if(error)
+              {
+                  return callback(error);
+              }
+          return callback(null, results);
+      });
+    },
 
 
   createEmergencyContact : (req, callback) => {
@@ -1627,7 +1748,6 @@ deleteLeaveRequest: (data, callback) => {
   },
 
   deleteEmergencyContact: (data, callback) => {
-    console.log(data);
     pool.query(`delete from employee_emergency_contacts where contactId = ?`,
     [data.contactId], 
     (error, results, fields)=> {
@@ -1710,7 +1830,6 @@ deleteLeaveRequest: (data, callback) => {
   },
 
   deleteDependent: (data, callback) => {
-    console.log(data);
     pool.query(`delete from employee_dependants where dependantId = ?`,
     [data.dependantId], 
     (error, results, fields)=> {
@@ -1793,7 +1912,6 @@ deleteLeaveRequest: (data, callback) => {
   },
 
   deleteBenifit: (data, callback) => {
-    console.log(data);
     pool.query(`delete from employee_benefits where benefitId = ?`,
     [data.benefitId], 
     (error, results, fields)=> {
@@ -1888,7 +2006,6 @@ deleteLeaveRequest: (data, callback) => {
   },
 
   deleteDocument: (data, callback) => {
-    console.log(data);
     pool.query(`delete from employee_documents where documentId = ?`,
     [data.documentId], 
     (error, results, fields)=> {

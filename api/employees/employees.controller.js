@@ -1,6 +1,6 @@
 
 const { request, response } = require("express");
-const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, createLeaveRequest, updateLeaveRequest, deleteLeaveRequest, getLeaveRequests, updateOffBoardRecord, getEmployeeOffBoardInfo, getEmployeeProbationInfo, createCurrency, updateJobTitle, updateProbationRecord, createBenifit, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeEmergencyContacts, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
+const  {create, updateProfilePhoto,updateEmployee, updateBankInfo, getEmployeeAttendance,getAllAttendance, markAttendance, createLeaveRequest, updateLeaveRequest, deleteLeaveRequest, getLeaveRequests, updateOffBoardRecord, getEmployeeOffBoardInfo, getEmployeeProbationInfo, createCurrency, updateJobTitle, updateProbationRecord, createBenifit, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeEmergencyContacts, getEmployeeBankInfo, getPaymentMethods,createPayroll, updatePayroll, deletePayroll, deleteEmployee, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateCurrentSalary, getCurrencies, getEmployeeById, getEmployeeSalaryHistory, getAllEmployees, getUserRoles, getEmployeeJobInfo, getVisaTypes} = require("./employees.service");
 const { sign } = require("jsonwebtoken");
 
 function checkRequiredFields(body, fields) {
@@ -1028,6 +1028,112 @@ module.exports = {
                 });
             }
        });
+    },
+
+    getAllAttendance : (request, response) => {
+        const body = request.body;
+        
+        if(!body.date)
+            {
+                return response.status(400).json({
+                    success : false,
+                    message: "date is required to fetch attendance"
+                });
+            }
+        if(!body.companyId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "companyId is required to fetch attendance"
+            });
+        }
+        getAllAttendance(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get all attendance data",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get attendance data",
+                    data : results
+                });
+            }
+       });
+    },
+
+    getEmployeeAttendance : (request, response) => {
+        const body = request.body;
+        
+        if(!body.toDate)
+            {
+                return response.status(400).json({
+                    success : false,
+                    message: "toDate is required to fetch attendance"
+                });
+            }
+            if(!body.fromDate)
+                {
+                    return response.status(400).json({
+                        success : false,
+                        message: "fromDate is required to fetch attendance"
+                    });
+                }
+        if(!body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to fetch attendance"
+            });
+        }
+        getEmployeeAttendance(body, (error, results) =>{
+        if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : "failed to get all attendance data",
+                    error: error
+                });
+            }
+            else{
+                return response.status(200).json({
+                    success : true,
+                    message : "successfully get attendance data",
+                    data : results
+                });
+            }
+       });
+    },
+
+    markAttendance : (request, response) => {
+        
+        if(!request.body.employeeId)
+        {
+            return response.status(400).json({
+                success : false,
+                message: "employeeId is required to update data"
+            });
+        }
+
+        markAttendance(request, (error, results) => {
+            if(error)
+            {
+                return response.status(500).json({
+                    success : false,
+                    message : error
+                });
+            }
+
+            return response.status(200).json({
+                success : true,
+                message : "employee attendance successfully marked",
+                data : results
+            });
+        });
     },
 
     getUserRoles : (request, response) => {

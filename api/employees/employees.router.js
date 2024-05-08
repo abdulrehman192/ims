@@ -1,4 +1,4 @@
-const { createEmployeeAccount, updateProfilePhoto, createLeaveRequest, updateLeaveRequest, deleteLeaveRequest, getPaymentMethods, getLeaveRequests, updateOffBoardRecord, getEmployeeOffBoardInfo, getEmployeeProbationInfo, updateProbationRecord, createCurrency, createBenifit, updateJobTitle, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, getEmployeeEmergencyContacts, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeBankInfo, updateBankInfo, createPayroll, updatePayroll, deletePayroll, updateCurrentSalary, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateEmployeeAccount, getCurrencies, getEmployeeSalaryHistory, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
+const { createEmployeeAccount, updateProfilePhoto, getEmployeeAttendance, getAllAttendance, markAttendance, createLeaveRequest, updateLeaveRequest, deleteLeaveRequest, getPaymentMethods, getLeaveRequests, updateOffBoardRecord, getEmployeeOffBoardInfo, getEmployeeProbationInfo, updateProbationRecord, createCurrency, createBenifit, updateJobTitle, updateBenifit, deleteBenifit, getEmployeeBenifits, createDocument, updateDocument, deleteDocument, getEmployeeDocuments, createDependent, updateDependent, deleteDependent, getEmployeeDependents, getEmployeeEmergencyContacts, createEmergencyContact, updateEmergencyContact, deleteEmergencyContact, getEmployeeBankInfo, updateBankInfo, createPayroll, updatePayroll, deletePayroll, updateCurrentSalary, getEmployeePayrollHistory, getEmployeeJobHistory, updateCurrentJob, getJobTitles, updateEmployeeAccount, getCurrencies, getEmployeeSalaryHistory, getVisaTypes, deleteEmployeeAccount, getEmployeeById, getAllEmployees, getUserRoles, getEmployeeJobInfo } = require("./employees.controller");
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
 
@@ -44,6 +44,7 @@ router.post("/update-off-board",checkToken, updateOffBoardRecord);
 router.post("/create-document",checkToken, uploadIfImageUrl, createDocument);
 router.post("/create-emergency-contact",checkToken, createEmergencyContact);
 router.post("/create-dependent",checkToken, createDependent);
+router.post("/mark-attendance",checkToken, markAttendance);
 router.post("/create-benefit",checkToken, createBenifit);
 router.post("/create-currency",checkToken, createCurrency);
 router.patch("/update-employee", checkToken, uploadIfImageUrl, updateEmployeeAccount);
@@ -63,6 +64,8 @@ router.delete("/delete-dependent", checkToken, deleteDependent);
 router.delete("/delete-benefit", checkToken, deleteBenifit);
 router.post("/get-employee-by-id", checkToken, getEmployeeById);
 router.post("/get-all-employees", checkToken, getAllEmployees);
+router.post("/get-all-attendance", checkToken, getAllAttendance);
+router.post("/get-employee-attendance", checkToken, getEmployeeAttendance);
 router.post("/get-user-roles", checkToken, getUserRoles);
 router.post("/get-salary-history", checkToken, getEmployeeSalaryHistory);
 router.post("/get-leave-requests", checkToken, getLeaveRequests);
