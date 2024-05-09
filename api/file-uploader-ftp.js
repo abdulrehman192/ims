@@ -37,7 +37,7 @@ class FTPUploader {
   }
 
 
-  uploadFileOverFTP = (req, res, next) => {
+  uploadFileOverFTP(req, res, next){
     if (req.files && req.files.length > 0) {
         const uploadedFiles = req.files;
         uploadedFiles.forEach(async(file) => {

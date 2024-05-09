@@ -5,9 +5,11 @@ module.exports = {
     create :(req, callback) => {
             var data = req.body;
             if(req.files.length > 0)
-            {
-              data.logoUrl = req.imageUrl;
-            }
+                {
+                  req.files.forEach(file => {
+                    data[file.fieldname] = req[file.fieldname];
+                  });
+                }
             var sql = `select * from companies where name = ? or email = ?`;
             var fields = [data.name, data.email];
             pool.query(sql, fields, (error, results, fields)=>{
@@ -61,9 +63,11 @@ module.exports = {
         data.modifiedAt = now;
         
         if(req.files.length > 0)
-        {
-          data.logoUrl = req.imageUrl;
-        }
+            {
+              req.files.forEach(file => {
+                data[file.fieldname] = req[file.fieldname];
+              });
+            }
         let sql = 'UPDATE companies SET ';
         const setClauses = [];
         

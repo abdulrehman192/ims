@@ -66,8 +66,10 @@ module.exports = {
             var data = req.body;   
             if(req.files.length > 0)
                 {
-                data.fileUrl = req.imageUrl;
-                }         
+                  req.files.forEach(file => {
+                    data[file.fieldname] = req[file.fieldname];
+                  });
+                }       
             pool.query(`insert into announcements(title, description, type, status, fileUrl, issuedBy, dateTime, departmentId, officeId, companyId) values (?,?,?,?,?, ?,?,?,?,?)`,
                     [data.title, data.description, data.type, data.status, data.fileUrl, data.issuedBy, data.dateTime, data.departmentId, data.officeId, data.companyId], 
                     (error, results, fields)=> {
@@ -88,9 +90,11 @@ module.exports = {
         const now = new Date();
         data.modifiedAt = now;
         if(req.files.length > 0)
-        {
-        data.fileUrl = req.imageUrl;
-        }  
+            {
+              req.files.forEach(file => {
+                data[file.fieldname] = req[file.fieldname];
+              });
+            } 
         let sql = 'UPDATE announcements SET ';
         const setClauses = [];
         

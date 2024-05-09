@@ -586,9 +586,11 @@ module.exports = {
         const now = new Date();
         data.createAt = now;
         if(req.files.length > 0)
-        {
-          data.imageUrl = req.imageUrl;
-        }
+          {
+            req.files.forEach(file => {
+              data[file.fieldname] = req[file.fieldname];
+            });
+          }
         pool.query(`select * from users where email = ?`, [data.email], (error, result, fields) => {
             if(error)
             {
@@ -634,9 +636,11 @@ module.exports = {
         const now = new Date();
         data.modifiedAt = now;
         if(req.files.length > 0)
-        {
-          data.imageUrl = req.imageUrl;
-        }
+          {
+            req.files.forEach(file => {
+              data[file.fieldname] = req[file.fieldname];
+            });
+          }
         let sql = 'UPDATE users SET ';
         const setClauses = [];
         if(data.password){

@@ -49,8 +49,10 @@ module.exports = {
             var data = req.body;   
             if(req.files.length > 0)
                 {
-                data.fileUrl = req.imageUrl;
-                }         
+                  req.files.forEach(file => {
+                    data[file.fieldname] = req[file.fieldname];
+                  });
+                }        
             pool.query(`insert into common_folder( title, description, employeePrivacy, fileUrl, officeId, companyId) values (?,?,?,?,?,?)`,
                     [data.title, data.description, data.employeePrivacy, data.fileUrl,  data.officeId, data.companyId], 
                     (error, results, fields)=> {
@@ -71,9 +73,11 @@ module.exports = {
         const now = new Date();
         data.modifiedAt = now;
         if(req.files.length > 0)
-        {
-            data.fileUrl = req.imageUrl;
-        }  
+            {
+              req.files.forEach(file => {
+                data[file.fieldname] = req[file.fieldname];
+              });
+            } 
         let sql = 'UPDATE common_folder SET ';
         const setClauses = [];
         
