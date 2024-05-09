@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.11:3306
--- Generation Time: Mar 22, 2024 at 10:08 AM
--- Server version: 10.11.7-MariaDB-cll-lve
--- PHP Version: 7.2.34
+-- Host: localhost
+-- Generation Time: May 09, 2024 at 06:27 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `u725151912_hr_portal`
+-- Database: `ims`
 --
 
 -- --------------------------------------------------------
@@ -36,12 +36,21 @@ CREATE TABLE `announcements` (
   `fileUrl` text DEFAULT NULL,
   `issuedBy` text NOT NULL,
   `dateTime` datetime NOT NULL,
-  `departmentId` int(11) DEFAULT NULL,
-  `officeId` int(11) DEFAULT NULL,
+  `departmentId` int(11) DEFAULT 0,
+  `officeId` int(11) DEFAULT 0,
   `companyId` int(11) NOT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `announcements`
+--
+
+INSERT INTO `announcements` (`announcementId`, `title`, `description`, `type`, `status`, `fileUrl`, `issuedBy`, `dateTime`, `departmentId`, `officeId`, `companyId`, `createAt`, `modifiedAt`) VALUES
+(1, 'Test Announcements', '<p>asdfasdf asdfaasd fasdf<br/>asdf asdf<strong><em> sdfjhk sdfkja s </em></strong><sub><strong><em>asdfas</em></strong></sub></p>', 'asdfa', '', 'e342a5bb24304b0e802a11f5c86bda1f.jpg', 'asdf', '2024-04-29 17:02:06', 0, 8, 1, '2024-04-02 10:12:18', '2024-04-29 17:02:06'),
+(3, 'New Announcement', '<p><sub><strong><em>asdfkas djflaskldjf askldjf laksjdf laskdl</em></strong></sub><span class=\"ql-size-huge\"> asdjkfhakjs dfkjahsk dfhk</span></p>', 'jkashdkfh ak', '', '14ca0519eef24d15b5626a56b840a21f.jpg', 'asmdfajshdf', '2024-04-29 17:02:49', 9, 8, 1, '2024-04-29 12:02:49', '2024-04-29 12:02:49'),
+(4, 'asdfkansdf', '<p><span class=\"ql-size-huge\">asdfasdfkj aslkdfj askldfj la</span></p>', 'asdfadsf', '', 'abfea4e17b494348b90fa955290db789.jpg', 'asdfa', '2024-04-29 17:31:30', 9, 8, 1, '2024-04-29 12:31:30', '2024-04-29 12:31:30');
 
 -- --------------------------------------------------------
 
@@ -51,7 +60,7 @@ CREATE TABLE `announcements` (
 
 CREATE TABLE `cities` (
   `id` int(11) NOT NULL,
-  `country` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `country` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `city` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -44798,6 +44807,15 @@ CREATE TABLE `common_folder` (
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `common_folder`
+--
+
+INSERT INTO `common_folder` (`fileId`, `title`, `description`, `employeePrivacy`, `fileUrl`, `officeId`, `companyId`, `createAt`, `modifiedAt`) VALUES
+(1, 'Test File', '<p><strong>Test File Description</strong></p>', 0, '9772e58742674cde86a19dda2ef5ed93.pdf', 8, 1, '2024-04-02 11:18:45', '2024-04-02 16:46:42'),
+(3, 'ID photo', '<p>Test ID File</p>', 1, 'e459f486f1c64922a36bba150a2925b2.jpg', 8, 1, '2024-04-29 12:03:42', '2024-04-29 12:03:42'),
+(4, 'New File', '<p>New File Description</p>', 1, '805b659321374c8490330edf72097fe2.pdf', 8, 1, '2024-04-29 12:32:09', '2024-04-29 12:32:09');
+
 -- --------------------------------------------------------
 
 --
@@ -44835,7 +44853,60 @@ CREATE TABLE `companies` (
 --
 
 INSERT INTO `companies` (`companyId`, `name`, `tagLine`, `description`, `missionStatement`, `visionStatement`, `licenseNo`, `licenseExpiry`, `fiscalYear`, `email`, `contact`, `website`, `headquarterAddress`, `country`, `logoUrl`, `founder`, `foundedDate`, `employeeCount`, `subscriptionType`, `subscriptionStart`, `subscriptionEnd`, `createAt`, `modifiedAt`) VALUES
-(1, 'The One Properties', 'This is a tagline', 'This is a description', 'This is a mission statement', 'This is a vision statement', 'asdfase34', '2028-03-28', '2024-06-29', 'abcd@gmail.com', '78622565', 'http://the1properties.com', 'UAE', '', '78752154546316.png', 'Ali raza', '2022-01-01', 10, '', '0000-00-00', '0000-00-00', '2024-02-18 11:13:26', '2024-03-19 09:44:39');
+(1, 'The One Properties', 'This is a tagline', 'This is a description', 'This is a mission statement', 'This is a vision statement', 'asdfase34', '2028-03-28', '2024-06-29', 'abcd@gmail.com', '78622565', 'http://the1properties.com', 'UAE abc', '', '78752154546316.png', 'Ali raza', '2022-01-01', 10, '', '0000-00-00', '0000-00-00', '2024-02-18 11:13:26', '2024-04-29 17:29:17');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `currencies`
+--
+
+CREATE TABLE `currencies` (
+  `id` int(11) NOT NULL,
+  `shortName` varchar(45) NOT NULL,
+  `name` varchar(60) NOT NULL,
+  `symbol` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `currencies`
+--
+
+INSERT INTO `currencies` (`id`, `shortName`, `name`, `symbol`) VALUES
+(1, 'USD', 'United States Dollar', '$'),
+(2, 'EUR', 'Euro', '€'),
+(3, 'JPY', 'Japanese Yen', '¥'),
+(4, 'GBP', 'British Pound Sterling', '£'),
+(5, 'AUD', 'Australian Dollar', 'A$'),
+(6, 'CAD', 'Canadian Dollar', 'C$'),
+(7, 'CHF', 'Swiss Franc', 'CHF'),
+(8, 'CNY', 'Chinese Yuan Renminbi', '¥'),
+(9, 'SEK', 'Swedish Krona', 'kr'),
+(10, 'NZD', 'New Zealand Dollar', 'NZ$'),
+(11, 'KRW', 'South Korean Won', '₩'),
+(12, 'SGD', 'Singapore Dollar', 'S$'),
+(13, 'NOK', 'Norwegian Krone', 'kr'),
+(14, 'MXN', 'Mexican Peso', 'Mex$'),
+(15, 'INR', 'Indian Rupee', '₹'),
+(16, 'RUB', 'Russian Ruble', '₽'),
+(17, 'ZAR', 'South African Rand', 'R'),
+(18, 'BRL', 'Brazilian Real', 'R$'),
+(19, 'TRY', 'Turkish Lira', '₺'),
+(20, 'AED', 'United Arab Emirates Dirham', 'د.إ'),
+(21, 'ARS', 'Argentine Peso', '$'),
+(22, 'CLP', 'Chilean Peso', '$'),
+(23, 'COP', 'Colombian Peso', '$'),
+(24, 'HKD', 'Hong Kong Dollar', 'HK$'),
+(25, 'IDR', 'Indonesian Rupiah', 'Rp'),
+(26, 'ILS', 'Israeli New Shekel', '₪'),
+(27, 'MYR', 'Malaysian Ringgit', 'RM'),
+(28, 'PEN', 'Peruvian Sol', 'S/'),
+(29, 'PHP', 'Philippine Peso', '₱'),
+(30, 'PKR', 'Pakistani Rupee', 'Rs'),
+(31, 'SAR', 'Saudi Riyal', 'ر.س'),
+(32, 'THB', 'Thai Baht', '฿'),
+(33, 'TWD', 'New Taiwan Dollar', 'NT$'),
+(34, 'VND', 'Vietnamese Dong', '₫');
 
 -- --------------------------------------------------------
 
@@ -44858,7 +44929,9 @@ CREATE TABLE `departments` (
 --
 
 INSERT INTO `departments` (`departmentId`, `name`, `description`, `officeId`, `companyId`, `createAt`, `modifiedAt`) VALUES
-(8, 'Marketing', '', 8, 1, '2024-03-13 10:46:20', '2024-03-13 10:46:20');
+(8, 'Development', '', 8, 1, '2024-03-13 10:46:20', '2024-04-04 07:47:00'),
+(9, 'Marketing', '', 8, 1, '2024-04-29 12:01:02', '2024-04-29 12:01:02'),
+(10, 'Human Resource', '', 8, 1, '2024-04-29 12:30:31', '2024-04-29 12:30:31');
 
 -- --------------------------------------------------------
 
@@ -44879,255 +44952,14 @@ CREATE TABLE `digital_assets` (
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `docs`
+-- Dumping data for table `digital_assets`
 --
 
-CREATE TABLE `docs` (
-  `id` int(11) NOT NULL,
-  `staffId` int(11) NOT NULL,
-  `title` text NOT NULL,
-  `fileName` text NOT NULL,
-  `url` text NOT NULL,
-  `modifiedOn` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `docs`
---
-
-INSERT INTO `docs` (`id`, `staffId`, `title`, `fileName`, `url`, `modifiedOn`) VALUES
-(7, 3, 'EDUCATIONAL CERTIFICATE', 'EDUCATIONAL CERTIFICATE.jpeg', '/files/EDUCATIONAL CERTIFICATE.jpeg', '2024-01-16 09:25:19'),
-(8, 3, 'OFFER LETTER', 'OFFER LETTER.pdf', '/files/OFFER LETTER.pdf', '2024-01-22 05:15:27'),
-(9, 3, 'NIC', 'NIC FRONT.pdf', '/files/NIC FRONT.pdf', '2024-01-22 05:16:52'),
-(11, 4, 'JOINING FORM', 'JOINING FORM.pdf', '/files/JOINING FORM.pdf', '2024-01-22 05:20:23'),
-(12, 3, 'JOB DESCRIPTION', 'TOP-Q-ANX-06 Job Descriptions - Asst - Marketing Executive.pdf', '/files/TOP-Q-ANX-06 Job Descriptions - Asst - Marketing Executive.pdf', '2024-01-22 05:22:19'),
-(13, 4, 'VISA', 'VISA.pdf', '/files/VISA.pdf', '2024-01-22 05:43:02'),
-(14, 4, 'CV', 'ResumeFaizanTariq.pdf', '/files/ResumeFaizanTariq.pdf', '2024-01-22 05:43:26'),
-(15, 4, 'MEDICAL', 'MEDICAL.pdf', '/files/MEDICAL.pdf', '2024-01-22 05:43:44'),
-(16, 4, 'OFFER LETTER', 'Job Offer Letter - Signed.pdf', '/files/Job Offer Letter - Signed.pdf', '2024-01-22 05:44:01'),
-(17, 4, 'EID', 'EID_ (1) (2).pdf', '/files/EID_ (1) (2).pdf', '2024-01-22 05:44:18'),
-(18, 4, 'EDUCATIONAL CERTIFICATE', 'EDUCATIONAL CERTIFICATE.pdf', '/files/EDUCATIONAL CERTIFICATE.pdf', '2024-01-22 05:44:36'),
-(19, 5, 'CV', 'Ayesha.pdf', '/files/Ayesha.pdf', '2024-01-22 05:51:25'),
-(20, 5, 'EID', 'AISHA EID.pdf', '/files/AISHA EID.pdf', '2024-01-22 05:52:11'),
-(21, 5, 'INFORMATION SHEET', 'INFORMATION SHEET.pdf', '/files/INFORMATION SHEET.pdf', '2024-01-22 05:58:51'),
-(22, 5, 'VISA', 'VISA.pdf', '/files/VISA.pdf', '2024-01-22 06:06:40'),
-(23, 5, 'PP', 'PP.pdf', '/files/PP.pdf', '2024-01-22 06:07:04'),
-(24, 5, 'SPONSOR PP', 'SP PP.jpeg', '/files/SP PP.jpeg', '2024-01-22 06:14:06'),
-(25, 5, 'SP EID', 'SP EID.pdf', '/files/SP EID.pdf', '2024-01-22 06:16:41'),
-(26, 5, 'SP VISA', 'SP VISA.pdf', '/files/SP VISA.pdf', '2024-01-22 06:21:51'),
-(27, 5, 'CERTIFICATE', 'CERTIFICATE.pdf', '/files/CERTIFICATE.pdf', '2024-01-22 06:25:28'),
-(28, 5, 'NOC', 'NOC.pdf', '/files/NOC.pdf', '2024-01-22 06:26:03'),
-(29, 5, 'NFC HANDOVER', 'NFC HANDOVER AYESHA.pdf', '/files/NFC HANDOVER AYESHA.pdf', '2024-01-22 06:28:20'),
-(30, 5, 'REVISED JOB TITLE', 'REVISED JOB TITLE.pdf', '/files/REVISED JOB TITLE.pdf', '2024-01-22 06:28:41'),
-(31, 6, 'OFFER LETTER', 'TEHREEM OFFER LETTER.pdf', '/files/TEHREEM OFFER LETTER.pdf', '2024-01-22 07:01:47'),
-(32, 6, 'INFORMATION SHEET', 'TEHREEM INFO SHEET.pdf', '/files/TEHREEM INFO SHEET.pdf', '2024-01-22 07:02:16'),
-(33, 6, 'BACHELORS DEGREE', 'Bachelor\'s Degree.pdf', '/files/Bachelor\'s Degree.pdf', '2024-01-22 07:03:07'),
-(34, 6, 'EID', 'EID NEW.pdf', '/files/EID NEW.pdf', '2024-01-22 07:03:41'),
-(35, 6, 'PP COPY', 'PP Copy.jpeg', '/files/PP Copy.jpeg', '2024-01-22 07:04:16'),
-(36, 6, 'SP EID', 'SP EID.pdf', '/files/SP EID.pdf', '2024-01-22 07:05:49'),
-(37, 6, 'RAKEZ ID', 'RAKEZ ID Card1.pdf', '/files/RAKEZ ID Card1.pdf', '2024-01-22 07:06:11'),
-(38, 6, 'NFC HANDOVER', 'NFC HANDOVER TEHREEM.pdf', '/files/NFC HANDOVER TEHREEM.pdf', '2024-01-22 07:07:39'),
-(40, 6, 'SP PP', 'SP PP.jpeg', '/files/SP PP.jpeg', '2024-01-22 07:12:10'),
-(41, 7, 'CV', 'Kishor CV.pdf', '/files/Kishor CV.pdf', '2024-01-22 13:22:27'),
-(42, 7, 'INFORMATION SHEET', 'KISHOR INFORMATION SHEET.pdf', '/files/KISHOR INFORMATION SHEET.pdf', '2024-01-22 13:25:36'),
-(43, 7, 'EDUCATIONAL CERTIFICATE', 'BACHELORS OF ART.jpeg', '/files/BACHELORS OF ART.jpeg', '2024-01-22 13:26:52'),
-(44, 7, 'NFC HANDOVER', 'NFC HANDOVER KISHOR.pdf', '/files/NFC HANDOVER KISHOR.pdf', '2024-01-22 13:27:20'),
-(45, 7, 'EID', 'EID KISHOR.pdf', '/files/EID KISHOR.pdf', '2024-01-23 05:42:47'),
-(46, 7, 'PP COPY', 'Kishor PP.pdf', '/files/Kishor PP.pdf', '2024-01-23 05:45:30'),
-(47, 8, 'OFFER LETTER', 'OFFER LETTER-SAAD SIGNED.pdf', '/files/OFFER LETTER-SAAD SIGNED.pdf', '2024-01-23 06:01:03'),
-(48, 8, 'INFORMATION SHEET', 'SAAD INFORMATION SHEET.pdf', '/files/SAAD INFORMATION SHEET.pdf', '2024-01-23 06:01:59'),
-(49, 8, 'EMPLOYEMENT CONTRACT', 'SIGNED EMPLOYMENT CONTRACT.pdf', '/files/SIGNED EMPLOYMENT CONTRACT.pdf', '2024-01-23 06:02:57'),
-(50, 8, 'PERMIT CARD', 'WORK PERMIT SAAD.pdf', '/files/WORK PERMIT SAAD.pdf', '2024-01-23 06:03:16'),
-(51, 8, 'PP - VISA', 'PP - VISA.pdf', '/files/PP - VISA.pdf', '2024-01-23 06:04:08'),
-(52, 8, 'SAAD EID', 'SAAD EID.pdf', '/files/SAAD EID.pdf', '2024-01-23 06:06:40'),
-(53, 9, 'SOUHIR EID', 'SOUHIR EID.pdf', '/files/SOUHIR EID.pdf', '2024-01-23 06:16:58'),
-(54, 9, 'PP COPY', 'PP Copy.pdf', '/files/PP Copy.pdf', '2024-01-23 06:18:30'),
-(55, 9, 'SP EID', 'SP EID.pdf', '/files/SP EID.pdf', '2024-01-23 06:19:56'),
-(56, 9, 'SP PP', 'SP PP.jpeg', '/files/SP PP.jpeg', '2024-01-23 06:20:15'),
-(57, 9, 'EDUCATIONAL CERTIFICATE', 'Education cert-Souhir.pdf', '/files/Education cert-Souhir.pdf', '2024-01-23 06:20:43'),
-(58, 9, 'NFC HANDOVER', 'NFC HANDOVER SOUHIR.pdf', '/files/NFC HANDOVER SOUHIR.pdf', '2024-01-23 06:21:26'),
-(59, 9, 'PHONE HANDOVER', 'PHONE HANDOVER SOUHIR.pdf', '/files/PHONE HANDOVER SOUHIR.pdf', '2024-01-23 06:21:53'),
-(60, 9, 'SALARY CERTIFICATE LETTER', 'SOUHIR - SALARY SIGNATURE.pdf', '/files/SOUHIR - SALARY SIGNATURE.pdf', '2024-01-23 06:22:39'),
-(61, 10, 'CV', 'SAEED - CV.pdf', '/files/SAEED - CV.pdf', '2024-01-23 06:23:46'),
-(62, 10, 'OFFER LETTER', 'OFFER LETTER - SAEED.pdf', '/files/OFFER LETTER - SAEED.pdf', '2024-01-23 06:24:12'),
-(63, 10, 'INFORMATION SHEET', 'INFORMATION SHEET.pdf', '/files/INFORMATION SHEET.pdf', '2024-01-23 06:26:46'),
-(64, 10, 'JOB DESCRIPTION', 'SAEED - JOB DESCRIPTION.pdf', '/files/SAEED - JOB DESCRIPTION.pdf', '2024-01-23 06:27:15'),
-(65, 10, 'PP EID', 'PP-EID.pdf', '/files/PP-EID.pdf', '2024-01-23 06:27:37'),
-(66, 10, 'VISA', 'SAEED VISA.pdf', '/files/SAEED VISA.pdf', '2024-01-23 06:28:04'),
-(67, 10, 'CERTIFICATES', 'CERTIFICATES.pdf', '/files/CERTIFICATES.pdf', '2024-01-23 06:28:37'),
-(68, 10, 'NOC', 'NOC SAEED.pdf', '/files/NOC SAEED.pdf', '2024-01-23 06:29:24'),
-(69, 10, 'SP PP', 'SP PP.jpeg', '/files/SP PP.jpeg', '2024-01-23 06:31:05'),
-(70, 10, 'LIMITED CONTRACT', 'EMPLOYMENT CONTRACT.pdf', '/files/EMPLOYMENT CONTRACT.pdf', '2024-01-23 06:31:26'),
-(71, 10, 'WORK PERMIT', 'WORK PERMIT.pdf', '/files/WORK PERMIT.pdf', '2024-01-23 06:32:00'),
-(72, 10, 'TRAINING CHECKLIST', 'TRAINING CHECKLIST.pdf', '/files/TRAINING CHECKLIST.pdf', '2024-01-23 06:32:21'),
-(73, 10, 'ASSET HANDOVER', 'ASSET HANDOVER.pdf', '/files/ASSET HANDOVER.pdf', '2024-01-23 06:32:56'),
-(74, 10, 'LAPTOP HANDOVER', 'LAPTOP HANDOVER.pdf', '/files/LAPTOP HANDOVER.pdf', '2024-01-23 06:34:16'),
-(75, 10, 'NFC HANDOVER', 'NFC HANDOVER SAEED.pdf', '/files/NFC HANDOVER SAEED.pdf', '2024-01-23 06:34:40'),
-(76, 11, 'OFFER LETTER', 'OFFER LETTER - DIANE.pdf', '/files/OFFER LETTER - DIANE.pdf', '2024-01-23 06:37:02'),
-(77, 11, 'TRAINING CHECKLIST', 'TRAINING CHECKLIST.pdf', '/files/TRAINING CHECKLIST.pdf', '2024-01-23 06:39:18'),
-(78, 11, 'JOB DESCRIPTION', 'JOB DESCRIPTION.pdf', '/files/JOB DESCRIPTION.pdf', '2024-01-23 06:39:39'),
-(79, 11, 'EID', 'Diane Petty (EID).pdf', '/files/Diane Petty (EID).pdf', '2024-01-23 06:40:10'),
-(80, 11, 'PP COPY', 'Passport Copy.pdf', '/files/Passport Copy.pdf', '2024-01-23 06:40:28'),
-(81, 11, 'INFORMATION SHEET', 'INFO SHEET.pdf', '/files/INFO SHEET.pdf', '2024-01-23 06:40:51'),
-(82, 11, 'SIM HANDOVER', 'DIANE ASSET HANDOVER.pdf', '/files/DIANE ASSET HANDOVER.pdf', '2024-01-23 06:41:18'),
-(83, 11, 'ASSET HANDOVER', 'ASSET HANDOVER.pdf', '/files/ASSET HANDOVER.pdf', '2024-01-23 06:41:55'),
-(84, 11, 'EDUCATIONAL CERTIFICATE', 'Educational Certificate.pdf', '/files/Educational Certificate.pdf', '2024-01-23 06:42:17'),
-(85, 11, 'BANK DETAILS', 'BANK DETAILS.pdf', '/files/BANK DETAILS.pdf', '2024-01-23 06:42:37'),
-(86, 11, 'NFC HANDOVER', 'NFC HANDOVER.pdf', '/files/NFC HANDOVER.pdf', '2024-01-23 06:42:58'),
-(87, 12, 'CV', 'CV  PATATI.pdf', '/files/CV  PATATI.pdf', '2024-01-23 06:43:44'),
-(88, 12, 'OFFER LETTER SIGNED', 'MONTASSAR OFFER LETTER SIGNED.pdf', '/files/MONTASSAR OFFER LETTER SIGNED.pdf', '2024-01-23 06:44:07'),
-(89, 12, 'JOB DESCRIPTION', 'JOB DESCRIPTION.pdf', '/files/JOB DESCRIPTION.pdf', '2024-01-23 06:44:33'),
-(90, 12, 'INFORMATION SHEET', 'MONTASSAR INFO SHEET.pdf', '/files/MONTASSAR INFO SHEET.pdf', '2024-01-23 06:47:12'),
-(91, 12, 'CONTRACT', 'Attested Employment Contract1 (1).pdf', '/files/Attested Employment Contract1 (1).pdf', '2024-01-23 06:47:33'),
-(92, 12, 'EID', 'MONTASSAR EID.pdf', '/files/MONTASSAR EID.pdf', '2024-01-23 06:47:56'),
-(93, 12, 'PP', 'PP.pdf', '/files/PP.pdf', '2024-01-23 06:48:14'),
-(94, 12, 'VISA', 'VISA.pdf', '/files/VISA.pdf', '2024-01-23 06:48:30'),
-(95, 12, 'EDUCATIONAL CERTIFICATE', 'CERTIFICATE.pdf', '/files/CERTIFICATE.pdf', '2024-01-23 06:48:52'),
-(96, 12, 'NOC', 'NOC.pdf', '/files/NOC.pdf', '2024-01-23 06:49:09'),
-(97, 12, 'SP PP - EID - VISA', 'SP PP - EID - VISA.pdf', '/files/SP PP - EID - VISA.pdf', '2024-01-23 06:51:39'),
-(98, 12, 'SIM - PHONE HANDOVER', 'ASSET HANDOVER.pdf', '/files/ASSET HANDOVER.pdf', '2024-01-23 06:52:29'),
-(99, 12, 'LAPTOP HANDOVER', 'LAPTOP HANDOVER.pdf', '/files/LAPTOP HANDOVER.pdf', '2024-01-23 06:53:00'),
-(100, 12, 'RAKEZ CARD', 'RAKEZ ID Card1.pdf', '/files/RAKEZ ID Card1.pdf', '2024-01-23 06:54:26'),
-(101, 13, 'CV', 'CV.pdf', '/files/CV.pdf', '2024-01-23 06:55:08'),
-(102, 13, 'EDUCATIONAL CERTIFICATE', 'EDUCATINAL CERTIFICATE.pdf', '/files/EDUCATINAL CERTIFICATE.pdf', '2024-01-23 06:56:50'),
-(103, 13, 'EID', 'EID TRIZAH.pdf', '/files/EID TRIZAH.pdf', '2024-01-23 06:57:58'),
-(104, 13, 'PP - VISA', 'PP - VISA.pdf', '/files/PP - VISA.pdf', '2024-01-23 06:58:19'),
-(105, 13, 'INFORMATION SHEET', 'TRIZAH - INFO SHEET.pdf', '/files/TRIZAH - INFO SHEET.pdf', '2024-01-23 06:58:53'),
-(106, 13, 'JOINING FORM', 'TRIZAH - JOINING FORM.pdf', '/files/TRIZAH - JOINING FORM.pdf', '2024-01-23 06:59:11'),
-(107, 13, 'NOC', 'NOC.pdf', '/files/NOC.pdf', '2024-01-23 06:59:50'),
-(108, 13, 'SP PP - VISA - EID', 'SP PP VISA EID.pdf', '/files/SP PP VISA EID.pdf', '2024-01-23 07:00:28'),
-(109, 13, 'TRADE LICENSE', 'License Letter.pdf', '/files/License Letter.pdf', '2024-01-23 07:00:56'),
-(110, 13, 'ESTABLISHMENT CARD', 'Establishment card.pdf', '/files/Establishment card.pdf', '2024-01-23 07:01:19'),
-(111, 13, 'ASSET HANDOVER', 'ASSET HANDOVER.pdf', '/files/ASSET HANDOVER.pdf', '2024-01-23 07:02:11'),
-(112, 13, 'ASSET RETURNED FROM TRIZAH', 'ASSET HANDOVER BY TRIZAH.pdf', '/files/ASSET HANDOVER BY TRIZAH.pdf', '2024-01-23 07:02:38'),
-(113, 14, 'offer letter', 'OFFER LETTER SIGNED.pdf', '/files/OFFER LETTER SIGNED.pdf', '2024-01-23 07:07:50'),
-(114, 14, 'INFORMATION SHEET', 'INFO SHEET.pdf', '/files/INFO SHEET.pdf', '2024-01-23 07:09:26'),
-(115, 14, 'JOINING FORM', 'SULTAN JOINING FORM.pdf', '/files/SULTAN JOINING FORM.pdf', '2024-01-23 07:09:45'),
-(116, 14, 'EID', 'EID_ (4).pdf', '/files/EID_ (4).pdf', '2024-01-23 07:14:00'),
-(117, 14, 'PP', 'PP.pdf', '/files/PP.pdf', '2024-01-23 07:14:40'),
-(118, 14, 'VISA', 'VISA.pdf', '/files/VISA.pdf', '2024-01-23 07:14:59'),
-(119, 14, 'RAKEZ CONTRACT', 'Contract_PDF.pdf', '/files/Contract_PDF.pdf', '2024-01-23 07:15:23'),
-(120, 14, 'RAKEZ CARD', 'IDCARD-SR-951892.pdf', '/files/IDCARD-SR-951892.pdf', '2024-01-23 07:15:58'),
-(121, 14, 'ASSET HANDOVER', 'ASSET HANDOVER.pdf', '/files/ASSET HANDOVER.pdf', '2024-01-23 07:16:36'),
-(122, 14, 'SIM HANDOVER', 'ASSETHANDOVER.pdf', '/files/ASSETHANDOVER.pdf', '2024-01-23 07:17:28'),
-(123, 14, 'WHOM IT MAY CONCERN', 'SALARY CERTIFICATE LETTER.pdf', '/files/SALARY CERTIFICATE LETTER.pdf', '2024-01-23 07:20:48'),
-(124, 14, 'SALARY CERTIFICATE', 'SULTAN SALARY CERTIFICATE.pdf', '/files/SULTAN SALARY CERTIFICATE.pdf', '2024-01-23 07:21:29'),
-(125, 15, 'OFFER LETTER', 'OFFER LETTER SIGNED.pdf', '/files/OFFER LETTER SIGNED.pdf', '2024-01-23 07:22:58'),
-(126, 15, 'EID - VISA', 'EID - VISA.pdf', '/files/EID - VISA.pdf', '2024-01-23 07:26:10'),
-(127, 15, 'PP', 'PP.jpeg', '/files/PP.jpeg', '2024-01-23 07:26:29'),
-(128, 15, 'ASSET HANDOVER', 'ASSET HANDOVER.pdf', '/files/ASSET HANDOVER.pdf', '2024-01-23 07:26:45'),
-(129, 15, 'NOC', 'noc.pdf', '/files/noc.pdf', '2024-01-23 07:27:06'),
-(130, 15, 'SP EID', 'AZIZ SPONSOR EID.jpeg', '/files/AZIZ SPONSOR EID.jpeg', '2024-01-23 07:27:23'),
-(131, 15, 'EDUCATIONAL CERTIFICATE', 'BCom Degree(2).pdf', '/files/BCom Degree(2).pdf', '2024-01-23 07:27:48'),
-(132, 15, 'NOC FROM THE 1', 'NOC FOR AZIZ.pdf', '/files/NOC FOR AZIZ.pdf', '2024-01-23 07:28:12'),
-(133, 16, 'OFFER LETTER', 'HARISH OFFER LETTER SIGNED.pdf', '/files/HARISH OFFER LETTER SIGNED.pdf', '2024-01-23 07:31:08'),
-(134, 16, 'INFORMATION SHEET', 'HARISH INFO SHEET.pdf', '/files/HARISH INFO SHEET.pdf', '2024-01-23 07:31:55'),
-(135, 16, 'JOINING FORM', 'JOINING FORM.pdf', '/files/JOINING FORM.pdf', '2024-01-23 07:32:12'),
-(136, 16, 'PP - VISA - EID', 'PP - VISA - EID.pdf', '/files/PP - VISA - EID.pdf', '2024-01-23 07:33:46'),
-(137, 16, 'EDUCATIONAL CERTIFICATE', 'EDUCATIONL CERTIFICATE.pdf', '/files/EDUCATIONL CERTIFICATE.pdf', '2024-01-23 07:34:05'),
-(139, 16, 'EMPLOYMENT CONTRACT', 'ATTESTED EMPLOYMENT CONTRACT.pdf', '/files/ATTESTED EMPLOYMENT CONTRACT.pdf', '2024-01-23 07:37:25'),
-(140, 16, 'RAKEZ CARD', 'RAKEZ CARD.pdf', '/files/RAKEZ CARD.pdf', '2024-01-23 07:37:53'),
-(141, 17, 'OFFER LETTER', 'OFFER LETTER - RAUAN.pdf', '/files/OFFER LETTER - RAUAN.pdf', '2024-01-23 07:41:48'),
-(142, 17, 'INFORMATION SHEET', 'RAUAN INFO SHEET.pdf', '/files/RAUAN INFO SHEET.pdf', '2024-01-23 07:43:01'),
-(143, 17, 'JOINING FORM', 'RAUAN JOINING FORM.pdf', '/files/RAUAN JOINING FORM.pdf', '2024-01-23 07:43:19'),
-(144, 17, 'EID - PP', 'EID - PP.pdf', '/files/EID - PP.pdf', '2024-01-23 07:43:40'),
-(145, 17, 'VISA APPLICATION', 'VISA PAGE.jpeg', '/files/VISA PAGE.jpeg', '2024-01-23 07:44:11'),
-(146, 17, 'NOC', 'NOC - RAUAN AKMAMBETOV.pdf', '/files/NOC - RAUAN AKMAMBETOV.pdf', '2024-01-23 07:44:44'),
-(147, 17, 'EDUCATIONAL CERTIFICATE', 'Новый документ 2020-02-12 12.05.23_20200212120627.pdf', '/files/ÐÐ¾Ð²ÑÐ¸Ì Ð´Ð¾ÐºÑÐ¼ÐµÐ½Ñ 2020-02-12 12.05.23_20200212120627.pdf', '2024-01-23 07:45:09'),
-(148, 18, 'OFFER LETTER', 'ISABELLA OFFER LETTER.pdf', '/files/ISABELLA OFFER LETTER.pdf', '2024-01-23 07:46:09'),
-(149, 18, 'EID - PP - VISA', 'EID - PP - VISA.pdf', '/files/EID - PP - VISA.pdf', '2024-01-23 07:52:06'),
-(150, 18, 'NOC', 'NOC ISABELLA.pdf', '/files/NOC ISABELLA.pdf', '2024-01-23 07:52:25'),
-(151, 18, 'TRADE LICENSE', 'License Letter.pdf', '/files/License Letter.pdf', '2024-01-23 07:52:48'),
-(152, 18, 'EDUCATIONAL CERTIFICATE', 'EDUCATIONAL CERTIFICATE.jpeg', '/files/EDUCATIONAL CERTIFICATE.jpeg', '2024-01-23 07:53:08'),
-(153, 19, 'CV', 'VALERYIA ZHMYKHAVA CV.pdf', '/files/VALERYIA ZHMYKHAVA CV.pdf', '2024-01-23 07:54:22'),
-(154, 19, 'EID', 'EID Valeryia Zhmykhava 3.pdf', '/files/EID Valeryia Zhmykhava 3.pdf', '2024-01-23 07:55:09'),
-(155, 19, 'PP', 'Passport Valeryia Zhmykhava.pdf', '/files/Passport Valeryia Zhmykhava.pdf', '2024-01-23 07:55:41'),
-(156, 19, 'VISA', 'Visa Valeryia Zhmykhava.pdf', '/files/Visa Valeryia Zhmykhava.pdf', '2024-01-23 07:56:12'),
-(157, 20, 'OFFER LETTER', 'OFFER LETTER SIGNED.pdf', '/files/OFFER LETTER SIGNED.pdf', '2024-01-23 07:57:01'),
-(158, 20, 'CV', 'CV YASSER.pdf', '/files/CV YASSER.pdf', '2024-01-23 07:57:24'),
-(159, 20, 'PP', 'YASSER PP.jpeg', '/files/YASSER PP.jpeg', '2024-01-23 07:57:40'),
-(160, 20, 'EID', 'YASSER EID.pdf', '/files/YASSER EID.pdf', '2024-01-23 07:57:54'),
-(161, 20, 'EDUCATIONAL CERTIFICATE', 'YASSER CERTIFICATE.pdf', '/files/YASSER CERTIFICATE.pdf', '2024-01-23 07:58:19'),
-(162, 20, 'ASSET HANDOVER', 'YASSER ASSET HANDOVER.pdf', '/files/YASSER ASSET HANDOVER.pdf', '2024-01-23 08:04:24'),
-(163, 21, 'EDUCATIONAL CERTIFICATE', 'EDUCATIONAL CERTIFICATE.pdf', '/files/EDUCATIONAL CERTIFICATE.pdf', '2024-01-23 10:39:45'),
-(164, 21, 'CV', 'CV 2021 YASSINE RIAHI.pdf', '/files/CV 2021 YASSINE RIAHI.pdf', '2024-01-23 10:48:46'),
-(165, 21, 'EID', 'EID.pdf', '/files/EID.pdf', '2024-01-23 10:49:43'),
-(166, 21, 'PP', 'PP.pdf', '/files/PP.pdf', '2024-01-23 11:38:19'),
-(167, 21, 'RAKEZ CONTRACT', 'CONTRACT RAKEZ.pdf', '/files/CONTRACT RAKEZ.pdf', '2024-01-23 11:39:08'),
-(168, 21, 'TRAINING CHECKLIST', 'TRAINING CHECKLIST.pdf', '/files/TRAINING CHECKLIST.pdf', '2024-01-23 11:39:49'),
-(169, 21, 'ASSET HANDOVER', 'ASSET HANDOVER.pdf', '/files/ASSET HANDOVER.pdf', '2024-01-23 11:40:11'),
-(170, 21, 'ASSET RETURNED FROM YASSINE', 'ASSET RECEIVED BY YASSINE.pdf', '/files/ASSET RECEIVED BY YASSINE.pdf', '2024-01-23 11:40:42'),
-(171, 21, 'LAPTOP UNDERTAKING', 'LAPTOP UNDERTAKING - YASSINE.pdf', '/files/LAPTOP UNDERTAKING - YASSINE.pdf', '2024-01-23 11:41:06'),
-(172, 21, 'NFC HANDOVER', 'NFC HANDOVER YASSINE.pdf', '/files/NFC HANDOVER YASSINE.pdf', '2024-01-23 11:41:27'),
-(173, 22, 'CV', 'CV.pdf', '/files/CV.pdf', '2024-01-23 11:42:01'),
-(174, 22, 'OFFER LETTER', 'OFFER LETTER SIGNED.pdf', '/files/OFFER LETTER SIGNED.pdf', '2024-01-23 11:42:57'),
-(175, 22, 'JOB DESCRIPTION', 'JOB DESCRIPTION.pdf', '/files/JOB DESCRIPTION.pdf', '2024-01-23 11:43:20'),
-(176, 22, 'INFORMATION', 'INFORMATION SHEET.pdf', '/files/INFORMATION SHEET.pdf', '2024-01-23 11:43:54'),
-(177, 22, 'JOINING FORM', 'JOINING FORM.pdf', '/files/JOINING FORM.pdf', '2024-01-23 11:44:12'),
-(178, 22, 'EID', 'SOBHAN EID.pdf', '/files/SOBHAN EID.pdf', '2024-01-23 11:44:41'),
-(179, 22, 'PP', 'PP.pdf', '/files/PP.pdf', '2024-01-23 11:44:57'),
-(180, 22, 'VISA', 'VISA.pdf', '/files/VISA.pdf', '2024-01-23 11:45:14'),
-(181, 22, 'SIM - PHONE HANDOVER', 'SIM - PHONE HANDOVER.pdf', '/files/SIM - PHONE HANDOVER.pdf', '2024-01-23 11:56:09'),
-(182, 22, 'RAKEZ CONTRACT', 'LIMITED CONTRACT.pdf', '/files/LIMITED CONTRACT.pdf', '2024-01-23 11:56:43'),
-(183, 22, 'ASSET HANDOVER', 'LAPTOP HANDOVER.pdf', '/files/LAPTOP HANDOVER.pdf', '2024-01-23 11:57:07'),
-(184, 22, 'NFC HANDOVER', 'NFC HANDOVER.pdf', '/files/NFC HANDOVER.pdf', '2024-01-23 11:57:28'),
-(185, 22, 'EDUCATIONAL CERTIFICATE', 'EDUCATIONAL CERTIFICATE.pdf', '/files/EDUCATIONAL CERTIFICATE.pdf', '2024-01-23 11:57:54'),
-(186, 9, 'CV', 'CV.pdf', '/files/CV.pdf', '2024-01-23 12:09:12'),
-(187, 7, 'VISA', 'KISHOR - VISA.pdf', '/files/KISHOR - VISA.pdf', '2024-01-23 12:13:00'),
-(188, 7, 'JOB DESCRIPTION', 'KISHOR JOB DESCRIPTION.pdf', '/files/KISHOR JOB DESCRIPTION.pdf', '2024-01-23 12:37:35'),
-(189, 7, 'TRAINING CHECKLIST', 'TRAINING CHECKLIST KISHOR.pdf', '/files/TRAINING CHECKLIST KISHOR.pdf', '2024-01-23 12:39:03'),
-(190, 8, 'ASSET HANDOVER', 'SAAD ASSET HANDOVER.pdf', '/files/SAAD ASSET HANDOVER.pdf', '2024-01-23 12:39:58'),
-(191, 9, 'INFORMATION SHEET', 'SOUHIR INFORMATION SHEET.pdf', '/files/SOUHIR INFORMATION SHEET.pdf', '2024-01-23 12:43:28'),
-(192, 15, 'INFORMATION SHEET', 'AZIZ INFORMATION SHEET.pdf', '/files/AZIZ INFORMATION SHEET.pdf', '2024-01-23 12:52:04'),
-(193, 16, 'CV', 'HARISH CV.pdf', '/files/HARISH CV.pdf', '2024-01-23 12:52:43'),
-(194, 21, 'INFORMATION SHEET', 'YASSINE INFO SHEET.pdf', '/files/YASSINE INFO SHEET.pdf', '2024-01-23 12:56:39'),
-(195, 4, 'INFORMATION SHEET', 'FAIZAN INFORMATION SHEET.pdf', '/files/FAIZAN INFORMATION SHEET.pdf', '2024-01-23 12:59:07'),
-(196, 4, 'LIMITED CONTRACT - RAKEZ', 'FAIZAN LIMITED CONTRACT.pdf', '/files/FAIZAN LIMITED CONTRACT.pdf', '2024-01-23 12:59:38'),
-(197, 9, 'JOB DESCRIPTION', 'SOUHIR JOB DESCRIPTION.pdf', '/files/SOUHIR JOB DESCRIPTION.pdf', '2024-01-23 13:00:50'),
-(198, 4, 'NDA', 'NON-DISCLOSURE FAIZAN.pdf', '/files/NON-DISCLOSURE FAIZAN.pdf', '2024-01-23 13:02:04'),
-(199, 5, 'JOB DESCRIPTION', 'AYESHA JOB DESCRIPTION.pdf', '/files/AYESHA JOB DESCRIPTION.pdf', '2024-01-23 13:02:44'),
-(200, 5, 'ASSET HANDOVER', 'AYESHA HANDOVER.pdf', '/files/AYESHA HANDOVER.pdf', '2024-01-23 13:03:03'),
-(201, 23, 'INFORMATION SHEET', 'INFO SHEET.pdf', '/files/INFO SHEET.pdf', '2024-01-23 13:40:13'),
-(202, 23, 'OFFER LETTER', 'OFFER LETTER - BILAL.pdf', '/files/OFFER LETTER - BILAL.pdf', '2024-01-23 13:40:43'),
-(203, 23, 'JOB DECRIPTION', 'JOB DESCRIPTION.pdf', '/files/JOB DESCRIPTION.pdf', '2024-01-23 13:41:28'),
-(204, 23, 'JOINING FORM', 'JOINING FORM - BILAL.pdf', '/files/JOINING FORM - BILAL.pdf', '2024-01-23 13:50:34'),
-(205, 23, 'EID - PP', 'Bilal docs.pdf', '/files/Bilal docs.pdf', '2024-01-23 13:51:12'),
-(206, 23, 'VISA', 'VISA.jpeg', '/files/VISA.jpeg', '2024-01-23 13:51:37'),
-(207, 23, 'EDUCATIONAL CERTIFICATE', 'CERTIFICATE 2.jpeg', '/files/CERTIFICATE 2.jpeg', '2024-01-23 13:52:06'),
-(208, 23, 'NOC', 'NOC.pdf', '/files/NOC.pdf', '2024-01-23 13:52:31'),
-(209, 23, 'SP EID - PP - VISA', 'Ashaq Hussain passport and Visa.pdf', '/files/Ashaq Hussain passport and Visa.pdf', '2024-01-23 13:53:31'),
-(210, 23, 'ESTABLISHMENT CARD', 'Establishment_Card (35).pdf', '/files/Establishment_Card (35).pdf', '2024-01-23 13:54:01'),
-(211, 23, 'TRADE LICENSE', 'License (7).pdf', '/files/License (7).pdf', '2024-01-23 13:54:26'),
-(212, 23, 'ASSET HANDOVER', 'ASSET HANDOVER.pdf', '/files/ASSET HANDOVER.pdf', '2024-01-23 13:55:05'),
-(213, 25, 'OFFER LETTER', 'RAKEZ STAMPED OFFER LETTER.pdf', '/files/RAKEZ STAMPED OFFER LETTER.pdf', '2024-01-24 13:01:59'),
-(214, 25, 'RAKEZ CONTRACT', 'MOSTAFA CONTRACT STAMPED.pdf', '/files/MOSTAFA CONTRACT STAMPED.pdf', '2024-01-24 13:02:25'),
-(215, 25, 'EID', 'MOSTAFA EID.pdf', '/files/MOSTAFA EID.pdf', '2024-01-24 13:02:42'),
-(216, 25, 'PP COPY', 'Mostafa Passport Copy.pdf', '/files/Mostafa Passport Copy.pdf', '2024-01-24 13:03:07'),
-(217, 25, 'VISA', 'MOSTAFA VISA.pdf', '/files/MOSTAFA VISA.pdf', '2024-01-24 13:03:31'),
-(218, 25, 'EDUCATIONAL CERTIFICATE', 'Educational Certificate.pdf', '/files/Educational Certificate.pdf', '2024-01-24 13:04:24'),
-(219, 27, 'OFFER LETTER', 'Job Offer Letter - Signed.pdf', '/files/Job Offer Letter - Signed.pdf', '2024-01-24 13:14:15'),
-(220, 27, 'RAKEZ - CONTRACT', 'LIMITED EMPLOYMENT CONTRACT (3).pdf', '/files/LIMITED EMPLOYMENT CONTRACT (3).pdf', '2024-01-24 13:14:50'),
-(221, 27, 'PP COPY', 'Passport Abdul Razzaq.pdf', '/files/Passport Abdul Razzaq.pdf', '2024-01-24 13:15:18'),
-(222, 27, 'EID', 'Abdul Razzaq EID.pdf', '/files/Abdul Razzaq EID.pdf', '2024-01-24 13:15:37'),
-(223, 27, 'VISA', 'VISA_15925884 (1).pdf', '/files/VISA_15925884 (1).pdf', '2024-01-24 13:16:26'),
-(224, 24, 'OFFER LETTER', 'M. Shanik Offer letter.pdf', '/files/M. Shanik Offer letter.pdf', '2024-01-24 13:21:13'),
-(225, 24, 'CERTIFICATE', 'MBA Certificate - Shan 111.pdf', '/files/MBA Certificate - Shan 111.pdf', '2024-01-24 13:21:51'),
-(226, 24, 'EID - VISA - PP', 'EID - VISA - PP.pdf', '/files/EID - VISA - PP.pdf', '2024-01-24 13:27:25'),
-(227, 24, 'EID - VISA - PP', 'EID - VISA - PP.pdf', '/files/EID - VISA - PP.pdf', '2024-01-24 13:27:25'),
-(228, 24, 'RAKEZ CARD', 'RAKEZ ID Card.pdf', '/files/RAKEZ ID Card.pdf', '2024-01-27 06:05:59'),
-(234, 26, 'EID', 'Ashmin EID 2024.pdf', '/files/Ashmin EID 2024.pdf', '2024-01-27 06:21:04'),
-(235, 26, 'PP', 'Ashmi PP copy New-1 page.pdf', '/files/Ashmi PP copy New-1 page.pdf', '2024-01-27 06:21:34'),
-(236, 26, 'VISA', 'Owners Visa Copy.pdf', '/files/Owners Visa Copy.pdf', '2024-01-27 06:22:04'),
-(237, 28, 'OFFER LETTER', 'job offer letter-mubsem.pdf', '/files/job offer letter-mubsem.pdf', '2024-01-27 06:24:17'),
-(238, 28, 'RAKEZ CONTRACT', '20220921064208.pdf', '/files/20220921064208.pdf', '2024-01-27 06:25:15'),
-(239, 28, 'EID', 'EID MUBSEM.pdf', '/files/EID MUBSEM.pdf', '2024-01-27 06:27:44'),
-(240, 28, 'PP', 'Mubsem passport new.pdf', '/files/Mubsem passport new.pdf', '2024-01-27 06:29:32'),
-(241, 28, 'VISA', 'New Visa.pdf', '/files/New Visa.pdf', '2024-01-27 06:30:28'),
-(242, 28, 'WORK PERMIT', 'Work Permit FZ-Mubsem.pdf', '/files/Work Permit FZ-Mubsem.pdf', '2024-01-27 06:31:46'),
-(243, 57, 'CV', 'CV.pdf', '/files/CV.pdf', '2024-02-13 07:20:26');
+INSERT INTO `digital_assets` (`assetId`, `title`, `description`, `url`, `username`, `password`, `expireOn`, `companyId`, `createAt`, `modifiedAt`) VALUES
+(1, 'Test Asset', 'adfa', 'https://chat.openai.com/c/795fb353-ecc1-42a7-8b6b-28af1ea4c96e', 'asdf', 'asdfa', '2029-04-02', 1, '2024-04-02 12:46:35', '2024-04-02 17:54:48'),
+(3, 'Test skdjflakasd,fj asdjkf', '', 'https://ims.the1properties.com', 'abc@gmail.com', 'U2FsdGVkX188ch0ucnQMtSEignvbgKkiPEZtYFMbg2E=', '2024-04-23', 1, '2024-04-29 12:04:53', '2024-04-29 12:04:53'),
+(4, 'asdfjkasj', 'asdfa sf', 'https://www.google.com', 'abdc', 'U2FsdGVkX194XWgFnnWiTVL2eXYb9MuppKb5/uR55/8=', '2024-04-26', 1, '2024-04-29 12:33:30', '2024-04-29 12:33:30');
 
 -- --------------------------------------------------------
 
@@ -45171,6 +45003,14 @@ CREATE TABLE `employees` (
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `employees`
+--
+
+INSERT INTO `employees` (`employeeId`, `firstName`, `lastName`, `dateOfBirth`, `gender`, `idNo`, `idExpiry`, `idImageUrl`, `nationality`, `maritalStatus`, `email`, `mobile`, `country`, `state`, `city`, `postalCode`, `address`, `photoUrl`, `cvUrl`, `lineManagerId`, `status`, `passportNo`, `passportExpiry`, `passportImageUrl`, `visaType`, `visaNo`, `visaExpiry`, `visaImageUrl`, `officeId`, `departmentId`, `companyId`, `createAt`, `modifiedAt`) VALUES
+(1, 'Abdul', 'Rehman', '1997-01-18', 'Male', '35302-4980744-7', '2024-04-22', 'd0fd89def87e42339a8e0ca09315345a.jpg', 'Pakistani', 'Married', 'abc@gmail.com', '+923089098067', 'Pakistan', 'Punjab', 'Okara', '56300', 'Farid Abad Okara', '0ea91ff7255743948ebca02406ad2533.png', '5d7eab2f985c409580098b5a33077756.pdf', 0, 'Working', 'asdfasdfa', '1899-11-30', '30a3ef179d1447c0b2fb9f0e5b4f7463.jpg', 'Tourist Visa', 'dfajshfdkjahsdf', '1899-11-30', '056a306ff1d8457488dbc7bf5a8f2b66.jpg', 8, 8, 1, '2024-04-04 07:29:04', '2024-04-30 13:53:10'),
+(2, 'Ali', 'Raza', '2024-04-09', 'Male', '12345678976567', '2024-06-13', '745aa74e0bb544cd9a5f996e20bae4b3.jpg', 'Afghan', 'Divorced', 'akchuhdery47@gmail.com', '+923186042790', 'Pakistan', 'Punjab', 'Lahore', '5678678', 'Main City, New Abc Shop', 'cnic.jpg', 'b34516ae2eb8472cb0f98e5af508e20c.pdf', 1, 'Working', 'esdfghjkks45678', '2024-06-19', 'b1ee2004934f4baca2e4ecd944ac4957.jpg', 'Tourist Visa', 'sufaushdf jhaksdhf', '2029-04-12', '062eb88df1f04aa29c6aca61f62d9738.jpg', 8, 8, 1, '2024-04-29 11:41:50', '2024-04-29 17:36:01');
+
 -- --------------------------------------------------------
 
 --
@@ -45180,12 +45020,22 @@ CREATE TABLE `employees` (
 CREATE TABLE `employee_attendance` (
   `attendanceId` int(11) NOT NULL,
   `employeeId` int(11) NOT NULL,
-  `markById` int(11) NOT NULL,
+  `markById` int(11) DEFAULT 0,
   `status` text NOT NULL,
   `dateTime` datetime NOT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
-  `modifiesAt` datetime NOT NULL DEFAULT current_timestamp()
+  `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee_attendance`
+--
+
+INSERT INTO `employee_attendance` (`attendanceId`, `employeeId`, `markById`, `status`, `dateTime`, `createAt`, `modifiedAt`) VALUES
+(1, 1, 0, 'Present', '2024-05-08 12:32:36', '2024-05-08 12:32:47', '2024-05-08 12:43:04'),
+(2, 2, 0, 'On Leave', '2024-05-08 12:33:03', '2024-05-08 12:33:26', '2024-05-08 13:05:42'),
+(6, 1, 0, 'Absent', '2024-05-07 00:00:00', '2024-05-08 13:06:12', '2024-05-08 13:06:12'),
+(7, 2, 0, 'On Leave', '2024-05-07 00:00:00', '2024-05-08 13:06:15', '2024-05-08 13:06:15');
 
 -- --------------------------------------------------------
 
@@ -45197,7 +45047,7 @@ CREATE TABLE `employee_bank_info` (
   `bankId` int(11) NOT NULL,
   `employeeId` int(11) NOT NULL,
   `bankName` text NOT NULL,
-  `branch` text NOT NULL,
+  `branch` text DEFAULT NULL,
   `accountName` text NOT NULL,
   `accountNumber` text NOT NULL,
   `swift` text NOT NULL,
@@ -45206,21 +45056,36 @@ CREATE TABLE `employee_bank_info` (
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `employee_bank_info`
+--
+
+INSERT INTO `employee_bank_info` (`bankId`, `employeeId`, `bankName`, `branch`, `accountName`, `accountNumber`, `swift`, `iban`, `createAt`, `modifiedAt`) VALUES
+(1, 1, 'Meezan Bank', 'Main branch', 'Abdul Rehman', '123456789', '12345678iujhnm', '1234567890zxcvbnm', '2024-04-29 06:53:13', '2024-04-29 06:53:13'),
+(2, 2, 'Abc bank', 'asdfa', 'asdfasdfas', 'dfasdfasdfasf', 'asdfasdfasdf', 'asdfasf', '2024-04-29 12:38:02', '2024-04-29 12:38:02');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `employee_benefit`
+-- Table structure for table `employee_benefits`
 --
 
-CREATE TABLE `employee_benefit` (
+CREATE TABLE `employee_benefits` (
   `benefitId` int(11) NOT NULL,
-  `employeeId` varchar(45) NOT NULL,
+  `employeeId` int(11) NOT NULL,
   `title` text NOT NULL,
   `description` text DEFAULT NULL,
   `maxAmount` double NOT NULL DEFAULT 0,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee_benefits`
+--
+
+INSERT INTO `employee_benefits` (`benefitId`, `employeeId`, `title`, `description`, `maxAmount`, `createAt`, `modifiedAt`) VALUES
+(2, 1, 'sdfccghdfg d gd', 'aasdf', 232, '2024-05-01 06:52:19', '2024-05-01 12:02:16');
 
 -- --------------------------------------------------------
 
@@ -45238,6 +45103,13 @@ CREATE TABLE `employee_dependants` (
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `employee_dependants`
+--
+
+INSERT INTO `employee_dependants` (`dependantId`, `employeeId`, `name`, `relationship`, `details`, `createAt`, `modifiedAt`) VALUES
+(1, 1, 'Zain Ahmad', 'Brother', 'asdfa', '2024-04-30 11:38:44', '2024-04-30 16:53:27');
+
 -- --------------------------------------------------------
 
 --
@@ -45253,6 +45125,14 @@ CREATE TABLE `employee_documents` (
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee_documents`
+--
+
+INSERT INTO `employee_documents` (`documentId`, `employeeId`, `title`, `fileUrl`, `employeePrivacy`, `createAt`, `modifiedAt`) VALUES
+(2, 1, 'Abc', '0099fce5b78644f2a317dde6e9ca9960.jpg', 0, '2024-05-01 05:41:59', '2024-05-01 05:41:59'),
+(3, 1, 'sjakdfkah', 'f674b82cae6e46f5b49881834ac9ddd3.jpg', 1, '2024-05-01 05:48:35', '2024-05-01 10:49:10');
 
 -- --------------------------------------------------------
 
@@ -45270,6 +45150,13 @@ CREATE TABLE `employee_emergency_contacts` (
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `employee_emergency_contacts`
+--
+
+INSERT INTO `employee_emergency_contacts` (`contactId`, `employeeId`, `name`, `relationship`, `phone`, `createAt`, `modifiedAt`) VALUES
+(1, 1, 'Ali Raza', 'Brother', '123456789', '2024-04-30 11:17:30', '2024-04-30 06:10:35');
+
 -- --------------------------------------------------------
 
 --
@@ -45280,18 +45167,25 @@ CREATE TABLE `employee_job_info` (
   `jobInfoId` int(11) NOT NULL,
   `employeeId` int(11) NOT NULL,
   `jobTitleId` int(11) NOT NULL,
-  `description` text DEFAULT NULL,
   `joinDate` date NOT NULL,
   `departmentId` int(11) NOT NULL,
   `officeId` int(11) NOT NULL,
   `positionType` text NOT NULL COMMENT 'One-site\nRemote\nHybrid',
-  `lineManagerId` int(11) NOT NULL,
   `employmentType` text NOT NULL,
   `isCurrent` tinyint(4) NOT NULL DEFAULT 0,
-  `offBoardDate` date DEFAULT NULL,
+  `jobType` text DEFAULT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee_job_info`
+--
+
+INSERT INTO `employee_job_info` (`jobInfoId`, `employeeId`, `jobTitleId`, `joinDate`, `departmentId`, `officeId`, `positionType`, `employmentType`, `isCurrent`, `jobType`, `createAt`, `modifiedAt`) VALUES
+(1, 1, 1, '2023-05-04', 8, 8, 'Remote', 'Permanent', 1, 'Full-Time', '2024-04-26 10:34:56', '2024-04-26 10:34:56'),
+(2, 2, 1, '2024-04-09', 8, 8, 'Onsite', 'Contract', 0, 'Full-Time', '2024-04-29 12:36:35', '2024-04-29 12:36:35'),
+(3, 2, 1, '2024-04-01', 8, 8, 'Remote', 'Permanent', 0, 'Full-Time', '2024-04-29 12:39:09', '2024-04-29 12:39:09');
 
 -- --------------------------------------------------------
 
@@ -45302,15 +45196,23 @@ CREATE TABLE `employee_job_info` (
 CREATE TABLE `employee_leave_requests` (
   `leaveId` int(11) NOT NULL,
   `employeeId` int(11) NOT NULL,
-  `typeId` int(11) NOT NULL,
+  `type` text NOT NULL,
   `message` text NOT NULL,
   `startDate` date NOT NULL,
   `endDate` date NOT NULL,
   `status` varchar(45) NOT NULL,
   `fileUrl` text DEFAULT NULL,
+  `companyId` int(11) NOT NULL DEFAULT 1,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee_leave_requests`
+--
+
+INSERT INTO `employee_leave_requests` (`leaveId`, `employeeId`, `type`, `message`, `startDate`, `endDate`, `status`, `fileUrl`, `companyId`, `createAt`, `modifiedAt`) VALUES
+(1, 1, 'Annual Leave', 'asdjf lkasjdflkasldjfa', '2024-05-06', '2024-05-08', 'Approved', '', 1, '2024-05-06 16:33:15', '2024-05-07 13:00:47');
 
 -- --------------------------------------------------------
 
@@ -45336,7 +45238,7 @@ CREATE TABLE `employee_offboard_info` (
 --
 
 CREATE TABLE `employee_payroll_info` (
-  `ipayrollId` int(11) NOT NULL,
+  `payrollId` int(11) NOT NULL,
   `employeeId` int(11) NOT NULL,
   `jobInfoId` int(11) NOT NULL,
   `salaryId` int(11) NOT NULL,
@@ -45345,9 +45247,18 @@ CREATE TABLE `employee_payroll_info` (
   `cutAmount` double NOT NULL DEFAULT 0,
   `cutReason` text DEFAULT NULL,
   `paidDate` date NOT NULL,
+  `paymentMethod` text NOT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee_payroll_info`
+--
+
+INSERT INTO `employee_payroll_info` (`payrollId`, `employeeId`, `jobInfoId`, `salaryId`, `fileUrl`, `paidAmount`, `cutAmount`, `cutReason`, `paidDate`, `paymentMethod`, `createAt`, `modifiedAt`) VALUES
+(1, 1, 1, 2, '3dcb4513869849359428324c34245263.jpg', 110000, 0, '', '2024-04-16', 'Credit Card', '2024-04-29 09:52:14', '2024-04-27 13:28:36'),
+(5, 2, 2, 3, '67128f7607f74403810dfff53a8877eb.pdf', 118800, 1200, 'askdfj lakf', '2024-04-17', 'Bank Transfer', '2024-04-29 12:40:03', '2024-04-29 12:40:03');
 
 -- --------------------------------------------------------
 
@@ -45379,6 +45290,8 @@ CREATE TABLE `employee_salary_info` (
   `effectiveStart` date NOT NULL,
   `effectiveEnd` date DEFAULT NULL,
   `basicSalary` double NOT NULL,
+  `transportAllowance` double NOT NULL DEFAULT 0,
+  `houseRentAllowance` double NOT NULL DEFAULT 0,
   `netSalary` double NOT NULL,
   `reason` text NOT NULL,
   `currency` varchar(45) NOT NULL,
@@ -45386,6 +45299,15 @@ CREATE TABLE `employee_salary_info` (
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee_salary_info`
+--
+
+INSERT INTO `employee_salary_info` (`salaryId`, `employeeId`, `effectiveStart`, `effectiveEnd`, `basicSalary`, `transportAllowance`, `houseRentAllowance`, `netSalary`, `reason`, `currency`, `current`, `createAt`, `modifiedAt`) VALUES
+(1, 1, '2023-07-05', '2024-04-24', 60000, 15000, 25000, 100000, '', 'PKR', 0, '2024-04-24 13:24:12', '2024-04-24 13:24:12'),
+(2, 1, '2023-09-15', '2024-04-24', 70000, 15000, 25000, 110000, '', 'PKR', 1, '2024-04-25 09:09:40', '2024-04-25 09:09:40'),
+(3, 2, '2024-04-25', '2024-04-29', 50000, 30000, 40000, 120000, 'No reason', 'AED', 1, '2024-04-29 12:37:20', '2024-04-29 12:37:20');
 
 -- --------------------------------------------------------
 
@@ -45397,6 +45319,7 @@ CREATE TABLE `job_titles` (
   `id` int(11) NOT NULL,
   `title` text NOT NULL,
   `description` text DEFAULT NULL,
+  `companyId` int(11) NOT NULL DEFAULT 1,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -45405,8 +45328,8 @@ CREATE TABLE `job_titles` (
 -- Dumping data for table `job_titles`
 --
 
-INSERT INTO `job_titles` (`id`, `title`, `description`, `createAt`, `modifiedAt`) VALUES
-(1, 'Senior Flutter Developer', 'develop the apps for company', '2024-02-14 00:00:00', '2024-02-14 00:00:00');
+INSERT INTO `job_titles` (`id`, `title`, `description`, `companyId`, `createAt`, `modifiedAt`) VALUES
+(1, 'Senior Flutter Developer', 'develop the apps for company', 1, '2024-02-14 00:00:00', '2024-02-14 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -45671,9 +45594,34 @@ CREATE TABLE `offices` (
 --
 
 INSERT INTO `offices` (`officeId`, `name`, `email`, `contact`, `country`, `state`, `city`, `postalCode`, `address`, `timezone`, `startDate`, `endDate`, `companyId`, `createAt`, `modifiedAt`) VALUES
-(8, 'The One Properties', 'abdulrazzaq@the1properties.com', '00971505978824', 'United Arab Emirates', 'Ras Al Khaimah', 'Ra\'s al Khaymah', '00000', '#11-F, Amenity Centre-1, Al Hamra', 'Asia/Dubai', '2021-12-01', '2024-03-03', 1, '2024-03-05 12:13:04', '2024-03-13 06:22:14'),
+(8, 'The One Properties', 'abdulrazzaq@the1properties.com', '00971505978824', 'United Arab Emirates', '', 'Ra\'s al Khaymah', '00000', '#11-F, Amenity Centre-1, Al Hamra', 'Asia/Dubai', '2021-12-01', '2024-03-03', 1, '2024-03-05 12:13:04', '2024-04-29 17:00:35'),
 (9, 'The One Properties FZ-LLC', 'admin@the1properties.com', '8008431', 'United Arab Emirates', 'Ras al Khaimah', 'Ra\'s al Khaymah', '', 'RAKEZ Amenity Center , Tower 1, Office # 1105 Ras al khaimah', 'Asia/Dubai', '2020-12-20', '2024-03-13', 1, '2024-03-12 22:30:59', '2024-03-12 22:30:59'),
-(10, 'The One Properties (Julphar)', 'hr@the1properties.com', '00971563202330', 'United Arab Emirates', 'Ras Al khaimah', 'Ra\'s al Khaymah', '00000', 'Julphr Office', 'Asia/Dubai', '2024-03-13', '2024-03-13', 1, '2024-03-13 06:18:48', '2024-03-13 06:19:45');
+(10, 'The One Properties (Julphar)', 'hr@the1properties.com', '00971563202330', 'United Arab Emirates', '', 'Ra\'s al Khaymah', '00000', 'Julphr Office abc', 'Asia/Dubai', '2024-03-13', '2024-03-13', 1, '2024-03-13 06:18:48', '2024-04-29 17:29:57');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payment_methods`
+--
+
+CREATE TABLE `payment_methods` (
+  `id` int(11) NOT NULL,
+  `method` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `payment_methods`
+--
+
+INSERT INTO `payment_methods` (`id`, `method`) VALUES
+(1, 'Credit Card'),
+(2, 'Debit Card'),
+(3, 'PayPal'),
+(4, 'Bank Transfer'),
+(5, 'Cash'),
+(6, 'Mobile Payment'),
+(7, 'Cryptocurrency'),
+(8, 'Payoneer');
 
 -- --------------------------------------------------------
 
@@ -45684,110 +45632,23 @@ INSERT INTO `offices` (`officeId`, `name`, `email`, `contact`, `country`, `state
 CREATE TABLE `physical_assets` (
   `assetId` int(11) NOT NULL,
   `title` text NOT NULL,
-  `description` text NOT NULL,
+  `description` text DEFAULT NULL,
   `employeeId` int(11) DEFAULT NULL,
   `serialNo` text NOT NULL,
   `status` varchar(45) DEFAULT NULL,
+  `companyId` int(11) NOT NULL DEFAULT 1,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `modifiedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `staff`
+-- Dumping data for table `physical_assets`
 --
 
-CREATE TABLE `staff` (
-  `id` int(11) NOT NULL,
-  `fullName` text NOT NULL,
-  `fatherName` text NOT NULL,
-  `gender` varchar(45) NOT NULL,
-  `mobile` text NOT NULL,
-  `email` text NOT NULL,
-  `password` text NOT NULL,
-  `nic` text NOT NULL,
-  `address` text NOT NULL,
-  `emergencyContact` text DEFAULT NULL,
-  `dob` date NOT NULL,
-  `photo` text NOT NULL,
-  `maritalStatus` varchar(45) NOT NULL,
-  `nationality` text NOT NULL,
-  `designation` text NOT NULL,
-  `department` text NOT NULL,
-  `reportingManager` text NOT NULL,
-  `jobType` varchar(45) NOT NULL,
-  `joiningDate` date NOT NULL,
-  `jobLocation` text NOT NULL,
-  `salary` varchar(45) NOT NULL,
-  `education` text NOT NULL,
-  `experience` text NOT NULL,
-  `fcmToken` text NOT NULL,
-  `status` varchar(45) NOT NULL,
-  `role` varchar(45) NOT NULL,
-  `createAt` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `staff`
---
-
-INSERT INTO `staff` (`id`, `fullName`, `fatherName`, `gender`, `mobile`, `email`, `password`, `nic`, `address`, `emergencyContact`, `dob`, `photo`, `maritalStatus`, `nationality`, `designation`, `department`, `reportingManager`, `jobType`, `joiningDate`, `jobLocation`, `salary`, `education`, `experience`, `fcmToken`, `status`, `role`, `createAt`) VALUES
-(3, 'Abdul Rehman', 'Muhammad Ramzan Ali', 'Male', '+923089098067', 'mr.abdulrehman.ar@gmail.com', 'U2FsdGVkX18VKBOfd2Ks9DXdZiqdvlRplpsciRRmTMI=', '545-55787878-445', 'Okara, Punjab, Pakistan', '', '1997-01-18', '/files/mypic.jpg', 'Married', 'Pakistani', 'Flutter Developer', 'Development', 'Muhammad Faizan', 'Full Time', '2023-10-16', 'Remote', '100000', 'MSCS', '3 Years', '', 'Active', 'admin', '2024-01-08 06:07:22'),
-(4, 'Muhammad Faizan', 'Tariq', 'Male', '0563202330', 'marketing@the1properties.com', 'U2FsdGVkX19A6/Rm5LSb+q0kBS3teHTTr9/DGsAJfuI=', '784-1996-7079011-4', 'Ras Al khaimah', '', '1996-08-16', '/files/FAIZAN PHOTO.jpeg', 'Married', 'Pakistan', 'Manager', 'Marketing', 'Mostafa', 'Full Time', '2021-08-01', 'Ras Al Khaimah', '4000', 'Master', '3', '', 'Active', 'admin', '2024-01-08 14:07:38'),
-(5, 'Ayesha Muhammad Rafique', 'Muhammad Rafique Wali', 'Female', '0509321457', 'aisha@the1properties.com', 'U2FsdGVkX18jU71RQ9zUt4gWB/CuklktfGjqGyPiKHs=', '784-1994-9403737-9', 'U.A.Q', '0509321457', '1994-08-13', '/files/PIC NEW.png', 'Single', 'Pakistan', 'Admin', 'Administration', 'Tehreem Mirza', 'Full Time', '2022-11-10', 'RAKEZ - AMenity centre - T1 - 11th Floor- office 5', '2500', 'BBA', '2', '', 'Active', 'admin', '2024-01-12 13:22:05'),
-(6, 'Tehreem Mirza Muhammad Shahid', 'Mirza Muhammad Shahid', 'Female', '0525200310', 'tehreem@the1properties.com', 'U2FsdGVkX1/WWfxM2mxNVMmCaHwYYOyvA8jRytD129E=', '784-1997-7243807-5', 'Khuzam - RAK', '0505204660', '1997-11-23', '/files/PHOTO.png', 'Single', 'Pakistan', 'Office Manager', 'Management', 'Abdulrazzaq Tufail', 'Full Time', '2022-03-28', 'RAKEZ - Al Hamra', '4000', 'Bachelors of Business Administration', '2', '', 'Active', 'admin', '2024-01-22 06:59:15'),
-(7, 'Kishor Shakya', 'Shakya', 'Male', '0557905029', 'kishor@the1properties.com', 'U2FsdGVkX18KhIsYMtJIdn1c1eSkJreca9akHghAtzs=', '784-1984-6979835-3', 'Al Rams', '0553180157', '1984-01-06', '/files/PHOTO.png', 'Married', 'Nepal', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2021-05-15', 'Julphar', '3000', 'Bachelors of arts', '3', '', 'Active', 'user', '2024-01-22 07:22:17'),
-(8, 'Sad Ahmad H Taha', 'Taha', 'Male', '0529249494', 'saad@the1properties.com', 'U2FsdGVkX1+VE1raY5o9VXkf4NAJ5RAeFeUE6PfhvSY=', '784-1993-7132659-8', 'Khuzam', '0508262612', '1993-08-24', '/files/PHOTO.png', 'Married', 'Jordan', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-02-04', 'RAKEZ - Al Hamra', '0', 'High School', '2', '', 'Active', 'user', '2024-01-22 08:45:22'),
-(9, 'Souhir Ait Barrehil', 'Barrehil', 'Female', '0552223737', 'souhir@the1properties.com', 'U2FsdGVkX1/g7dDY/a5QZStIwYCqk0qW6h54zbzVofs=', '784-1986-4986575-9', 'Mina Al Arab', '0566275529', '1986-12-20', '/files/SOUHIR PP.png', 'Married', 'Morroco', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-04-01', 'RAKEZ', '3000', 'Bachelors in sciense', '2', '', 'Active', 'user', '2024-01-22 10:14:05'),
-(10, 'Muhammad Saeed Uddin', 'Rahim Uddin', 'Male', '0558611853', 'msaeed@the1properties.com', 'U2FsdGVkX18UNcjkrjKD1Q46Up34InFAkVN1PEm4t7Q=', '784-1999-8052646-3', 'Khuzam', '0554512354', '1999-07-17', '/files/PHOTO.png', 'Married', 'Pakistan', 'Property Consultant', 'Sales', 'Kishor Shakya', 'Full Time', '2023-02-14', 'RAKEZ', '-', 'High school', '1', '', 'Active', 'user', '2024-01-22 10:31:10'),
-(11, 'Diane', 'Petty', 'Female', '0504571184', 'diane@the1properties.com', 'U2FsdGVkX19voUVQftUBb9ghYYcJYXLAfHwt6B+dweo=', '784-1955-3627619-9', 'Al Hamra viilage', '', '1970-01-10', '/files/PHOTO.png', 'Married', 'British', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2023-03-09', 'RAKEZ', '-', 'High School', '1', '', 'Active', 'user', '2024-01-22 11:26:56'),
-(12, 'Montassar Belah', 'Tlili', 'Male', '0505606984', 'montassar@the1properties.com', 'U2FsdGVkX19BUAyLadPmg6v5L3d5KDRWIr9tMP06EN0=', '784-1987-1570521-0', 'Qusaidath - RAK', '0505606984', '1987-12-07', '/files/PHOTO.png', 'Married', 'Tunisia', 'Property Consultant', 'Sales', 'Kishor', 'Full Time', '2023-09-07', 'Julphar Tower', '-', 'International economic finance', '6 months', '', 'Active', 'user', '2024-01-22 11:41:20'),
-(13, 'Trizah Wairimu', 'Wanyoike', 'Female', '0565368181', 'trizah@the1properties.com', 'U2FsdGVkX19WUlFMpZI01Safs6RaI+B7hcUygDK1X+M=', '784-1994-6247647-6', 'Mina Al Arab - RAK', '0565368080', '1994-12-20', '/files/PHOTO.png', 'Single', 'Kenya', 'Property Consultant', 'Sales', 'Kishor', 'Full Time', '2023-08-25', 'RAKEZ', '-', 'Bachelors in Human Resource', '5 months', '', 'Active', 'user', '2024-01-22 11:48:00'),
-(14, 'Sultan Khalil Houssni', 'Al Yaaqbeh', 'Male', '0553093771', 'sultan@the1properties.com', 'U2FsdGVkX1/bAuXLUaiXemVVZroWZvtFxIu5ErFlS7E=', '784-1988-7284105-5', 'RAK', '00962787136506', '1988-02-11', '/files/PHOTO.png', 'Single', 'Jordan', 'Property Consultant', 'Sales', 'Abdulrazzaq', 'Full Time', '2023-11-01', 'RAKEZ', '-', 'High school', '2 months', '', 'Active', 'user', '2024-01-22 11:55:13'),
-(15, 'Muhammad Aziz Uddin', 'Rahim Uddin', 'Male', '0554512354', 'finance@the1properties.com', 'U2FsdGVkX18DYbLnyg8BqkAHtKKm+x8cILAO8h8Jslg=', '784-1998-3903806-6', 'Khuzam', '0558611853', '1998-08-17', '/files/PHOTO.png', 'Married', 'Pakistan', 'Accountant', 'Finance', 'Abdulrazzaq Tufail', 'Full Time', '2023-09-22', 'RAKEZ', '2500', 'ACCA', '4 months', '', 'Active', 'user', '2024-01-22 12:04:07'),
-(16, 'Harish Krishna Morthy', 'Krishna', 'Male', '0585087844', 'harish@the1properties.com', 'U2FsdGVkX18EfpyBZ3wFDTMe6V4k5CUMjg3RdEv0viY=', '784-1997-5210145-3', 'Mina Al Arab', '09841059299', '1997-09-25', '/files/PHOTO.png', 'Single', 'India', 'Videographer', 'Marketing', 'Faizan Traiq', 'Full Time', '2023-10-18', 'RAKEZ', '3500', 'High School', '3 months', '', 'Active', 'user', '2024-01-22 12:09:33'),
-(17, 'Rauan', 'Akmambetov', 'Male', '0568476968', 'rauan@the1properties.com', 'U2FsdGVkX1/S+Ih33THEoQNQAggY6tTlHlNH0xf1aUA=', '784-1997-2715720-0', 'RAK', '0565450991', '1997-12-18', '/files/PHOTO.png', 'Single', 'Kazakhistan', 'Property Consultant', 'sales', 'Kishor', 'Full Time', '2023-10-24', 'Julphar', '-', 'High school', '3 months', '', 'Active', 'user', '2024-01-22 12:20:26'),
-(18, 'Yeannette Isabella Gebkollisch', 'Barthel', 'Female', '0503083108', 'isabella@the1properties.com', 'U2FsdGVkX194Qp/vShtfag7/0f75ob9HP9c1EWDrNt4=', '784-1971-3572090-8', 'Mina Al Arab', '0566704642', '1971-12-09', '/files/PHOTO.png', 'Married', 'German', 'Property Consultant', 'Sales', 'Kishor', 'Full Time', '2024-01-22', 'Julphar', '-', 'High School', '1 month', '', 'Active', 'user', '2024-01-22 12:41:04'),
-(19, 'Valeryia', 'Zhmykhava', 'Female', '0585973353', 'valeryia@the1properties.com', 'U2FsdGVkX1+9gaN7f1rYkAsTKE+GYQESLY73t8CeNEk=', '784-1979-7692181-3', 'RAK', '', '1979-04-01', '/files/PHOTO.png', 'Single', 'Belarus', 'Property Consultant', 'Sales', 'Kishor', 'Full Time', '2024-01-22', 'Julphar', '-', 'High school', '1 Month', '', 'Active', 'user', '2024-01-22 12:58:00'),
-(20, 'Yasser Mohamed Abd', 'Al Razek', 'Male', '0566954295', 'nouman@the1properties.com', 'U2FsdGVkX18O577CmgL9Wyo4dmBCt0K6GB3x9dxG7GE=', '784-1990-6108743-5', 'Al Nakheel', '0563338199', '1990-09-18', '/files/PHOTO.png', 'Married', 'Egypt', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2024-01-15', 'RAKEZ', '-', 'Bachelors', '1 month', '', 'Active', 'user', '2024-01-22 13:05:21'),
-(21, 'Yassine', 'Riahi', 'Male', '0521246990', 'yassine@the1properties.com', 'U2FsdGVkX1/A61Um/SH3KAJWrdfgIMSBTb3jjD6Hmdg=', '784-1985-4158812-9', 'Mina Al Arab', '0561165873', '1985-07-20', '/files/PHOTO.png', 'Married', 'Morroco', 'Property Consultant', 'Sales', 'Kishor', 'Full Time', '2022-11-15', 'Julphar', '-', 'High School', '1 Year', '', 'Active', 'user', '2024-01-23 10:25:01'),
-(22, 'Sobhan Mushtaq', 'Mushtaq Hussain', 'Male', '0524741783', 'msubhan@the1properties.com', 'U2FsdGVkX1/XVaHLTXiJiquGzRj6HOfoAl5QNX7PKMc=', '784-1996-9510872-2', 'RAK', '0544700106', '1996-05-08', '/files/PHOTO.JPG', 'Married', 'Pakistan', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2023-06-01', 'RAKEZ', '-', 'High School', '6 months', '', 'Active', 'user', '2024-01-23 10:35:11'),
-(23, 'Bilal', 'Ashiq', 'Male', '0559258192', 'bilal@the1properties.com', 'U2FsdGVkX1/0b5vj0dNFun1sr2HB+errbic7jaorTCQ=', '784-1985-7509026-7', 'RAK', '0554233728', '1985-01-05', '/files/PHOTO.png', 'Married', 'USA', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2023-07-10', 'Rakez', '-', 'Bachelors of science in Accounting', '6 Months', '', 'Active', 'user', '2024-01-23 13:39:07'),
-(24, 'Muhammad Shanik Puthiyaveettil', 'Majeed', 'Male', '0509762626', 'shanik@the1properties.com', 'U2FsdGVkX19T5SQmm81WoysxW3Na6AImDMZyCDEl2hI=', '784-1981-5949587-2', 'RAK', '0502717999', '1987-04-24', '/files/DSC_0964.JPG', 'Married', 'India', 'Manager', 'Maintenance', 'Abdulrazzaq Tufail', 'Full Time', '2020-12-10', 'RAKEZ', '4000', 'Bachelors in Business Administration', '3 Years', '', 'Active', 'user', '2024-01-24 07:16:37'),
-(25, 'Mostafa Ahmad Mostafa', 'Hazim', 'Male', '0502717999', 'mostafa@the1properties.com', 'U2FsdGVkX1+KP3HTJEf57rj7l5kxD/civNlaY+1c5+k=', '784-1981-3963724-7', 'Al Daith North - RAK', '0505978824', '1981-09-05', '/files/Passport Picture.jpeg', 'Married', 'Jordan', 'CCO', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-05-19', 'Rakez', '-', 'High School', '2 Years', '', 'Active', 'user', '2024-01-24 09:03:28'),
-(26, 'Ashmin Muhammad Shanik Asharaf', 'Kannankilath', 'Female', '0509762626', 'admin@the1properties.com', 'U2FsdGVkX1+nsz0tMKkiIVy5PeThUzgSUTAVk4kBO94=', '784-1987-9864919-4', 'RAK', '0505978824', '1987-01-01', '/files/Ashmi PP size New.jpeg', 'Married', 'India', 'Manager', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2020-01-20', 'Rakez', '-', 'High School', '3 Years', '', 'Active', 'user', '2024-01-24 12:46:15'),
-(27, 'Abdul Razzaq Muhammad', 'Tufail', 'Male', '0505978824', 'abdulrazzaq@the1properties.com', 'U2FsdGVkX18+uLHtxrwBZZp1O8PQlofvSo/0GX9eLZg=', '784-1975-3575470-5', 'Mina Al Arab', '0502717999', '1975-10-01', '/files/6518.JPG', 'Married', 'Pakistan', 'Ceo', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-07-14', 'Rakez', '-', 'High School', '3 Years', '', 'Active', 'user', '2024-01-24 13:12:56'),
-(28, 'Maysam Murad', 'Abo Rebea', 'Male', '0567350500', 'mubsem@the1properties.com', 'U2FsdGVkX18yO9LbTHoVJ1BMpBP7SUF2djXnB7SeWkA=', '784-19880468716-2', 'RAK', '', '1988-09-01', '/files/PP size Photo.jpeg', 'Single', 'Syrian Arab Republic', 'Sales Manager', 'Sales', 'Mostafa', 'Full Time', '2024-01-24', 'Rakez', '-', 'High School', '1 Year 10 Months', '', 'Inactive', 'user', '2024-01-24 13:44:04'),
-(29, 'Yousef El Araby Hassan', 'Khaleel', 'Male', '9715236700243', 'yousef@the1properties.com', 'U2FsdGVkX18q5JC38lB3HSR+6BeHpMVZ4ZYvespJc7Y=', '784-1998-1713183-4', 'RAK', '', '1998-06-05', '/files/Youssef PP size white.jpg', 'Single', 'Sri Lanka', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2024-01-25', 'RAKEZ', '-', 'High School', '11 Months', '', 'Inactive', 'user', '2024-01-25 07:42:29'),
-(30, 'Lubna Iqbal', 'Alimiya', 'Female', '971556102792', 'lubna@the1properties.com', 'U2FsdGVkX19Q/novGzcIUJ/WfrnddNYG0kmd84k6QBk=', '784-1988-6038283-1', 'RAK', '', '1988-02-03', '/files/PHOTO.png', 'Single', 'India', 'Admin', 'Administrtion', 'Shanik', 'Full Time', '2021-10-09', 'RAKEZ', '3500', 'High School', '5 Months', '', 'Inactive', 'user', '2024-01-25 07:48:29'),
-(31, 'Mohamed Emad Hamdy', 'Abdelbari', 'Male', '507651750', 'emad@the1properties.com', 'U2FsdGVkX190LcEWjjoDbGBr9N5LYDxMc1LtTlKZ51w=', '784-1992-7698328-7', 'RAK', '', '1992-11-08', '/files/PP Size Pik.jpg', 'Single', 'Palestine', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2021-01-11', 'RAKEZ', '-', 'High School', '6 Months', '', 'Inactive', 'user', '2024-01-25 07:55:18'),
-(32, 'Sabri Rabee', 'Alhamed', 'Male', '543490953', 'sabri@the1properties.com', 'U2FsdGVkX1+CD3u11EUI+Ohf3nsH4alc7pooqK8ElpU=', '784-1987-5465148-1', 'RAK', '', '1987-01-01', '/files/PHOTO.png', 'Married', 'Syrian Arab Republic', 'Property Consultant', 'Sales', 'Shanik', 'Full Time', '2022-01-04', 'RAKEZ', '-', 'High School', '3 Months', '', 'Inactive', 'user', '2024-01-25 08:00:33'),
-(33, 'Mohamed Mahmoud Ahmed', 'Hassan', 'Male', '971558447007', 'mohamed@the1properties.com', 'U2FsdGVkX180e1oiM62KmTAEfkIqZqKBN7RfGQ5dMgc=', '784-1979-2485361-3', 'Abu Dhabi', '', '1979-12-17', '/files/4x6.jpg', 'Married', 'Egypt', 'Property Consultant', 'Sales', 'Maysam', 'Full Time', '2022-02-02', 'RAKEZ', '-', 'High School', '5 Months', '', 'Inactive', 'user', '2024-01-25 08:09:12'),
-(34, 'Sherif Abdelnabbi', 'Mabrouk Abdrabbo', 'Male', '521090277', 'sherif@the1properties.com', 'U2FsdGVkX18d3VS8rdEi5zYhTdjezOzPhkA7Qhqp9NM=', '27935408', 'RAK', '', '1979-07-03', '/files/Screenshot 2024-01-25 121636.png', 'Married', 'Egypt', 'Property Consultant', 'Sales', 'Shanik', 'Full Time', '2022-03-22', 'Rakez', '-', 'High School', '0', '', 'Inactive', 'user', '2024-01-25 08:17:12'),
-(35, 'Obaid Majid Bhat', 'Abdul Majid Bhat', 'Male', '971569855089', 'obaid@the1properties.com', 'U2FsdGVkX19P0RbtKqlqEWyi/eJYh2Bx/nXKR860/iA=', '784-1989-50074075-7', 'RAK', '', '1989-07-20', '/files/Passport Picture.jpg', 'Married', 'India', 'Property Consultant', 'Sales', 'Shanik', 'Full Time', '2022-04-04', 'RAKEZ', '2000', 'High Scool', '6 months', '', 'Inactive', 'user', '2024-01-25 08:25:54'),
-(36, 'Chadia', 'Bakadir', 'Female', '0545462721', 'chadia@the1properties.com', 'U2FsdGVkX18lu5IaKJAtwtItwKctCKXrFoBaAYD6a34=', '784-1980-4764130-7', 'RAK', '', '1980-08-13', '/files/image (1).jpeg', 'Single', 'Morroco', 'Property Consultant', 'Sales', 'Mostafa', 'Full Time', '2022-05-27', 'RAKEZ', '2000', 'Diploma in finance', '1 year', '', 'Inactive', 'user', '2024-01-25 08:31:41'),
-(37, 'Kyle Damian', 'Davis', 'Male', '502923816', 'Kyle@the1properties.com', 'U2FsdGVkX1+TcvEYkniELJeNEAcdGAl4FnCejqW2kgk=', '784-1998-3162170-3', 'RAK', '', '1998-02-22', '/files/WhatsApp Image 2022-07-02 at 9.13.55 AM.jpeg', 'Single', 'South Africa', 'Property Consultant', 'Sales', 'Shanik', 'Full Time', '2022-07-01', 'RAKEZ', '2000', 'High School', '3 Months', '', 'Inactive', 'user', '2024-01-25 08:36:04'),
-(38, 'Hanieh Hooshang', 'Ahmad', 'Female', '971521858886', 'hanieh@the1properties.com', 'U2FsdGVkX18SXPm4nSYJLqMriYfuKBZAE0DgChdqlio=', '784-1985-4876937-5', 'RAK', '', '1985-05-27', '/files/Picture.jpeg', 'Single', 'slamic Republic of Iran', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-07-05', 'RAKEZ', '2000', 'High School', '8 Months', '', 'Inactive', 'user', '2024-01-25 08:40:47'),
-(39, 'Mohammad Oussamah', 'Alahmed', 'Male', '971506002319', 'Mohammad@the1properties.com', 'U2FsdGVkX1/Z9XMF3+fM5TY9RHeCka7P8MTKjVv5jpc=', '784-1999-0241091-1', 'RAK', '', '1999-05-08', '/files/Screenshot 2024-01-25 124620.png', 'Single', 'Syrian Arab Republic', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-07-15', 'RAKEZ', '2000', 'High School', '10 Months', '', 'Inactive', 'user', '2024-01-25 08:47:19'),
-(40, 'Kareem', 'Hany', 'Male', '971585386658', 'kareem@the1properties.com', 'U2FsdGVkX18tpzbI36SoHAIp3iJ/z02pi/PNe/WFWV8=', '784-1986-5463618-9', 'RAK', '', '1986-11-07', '/files/Screenshot 2024-01-25 132735.png', 'Married', 'Egypt', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-09-09', 'RAKEZ', '0', 'High School', '0', '', 'Inactive', 'user', '2024-01-25 09:29:29'),
-(41, 'Lisa Josepha', 'Brashear', 'Female', '0503655180', 'lisa@the1properties.com', 'U2FsdGVkX1+XlBV8tSxriB34FspLisy5R0+qsSZoXaM=', '784-1982-3981304-5', 'RAK', '', '1989-04-21', '/files/Screenshot 2024-01-25 152725.png', 'Married', 'USA', 'Property consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-10-19', 'RAKEZ', '-', 'Masters of Arts', '1 Month', '', 'Inactive', 'user', '2024-01-25 11:28:25'),
-(42, 'Abdelrahman Mohamed Nadim', 'Mohamed Sadek Drag', 'Male', '0589710944', 'abdelrahman@the1properties.com', 'U2FsdGVkX1+YtvBmq5aN9uBVu/E29oSiNIN2w1o5RT8=', '784-1997-2596500-0', 'RAK', '', '1997-10-20', '/files/19767-2021.jpg', 'Single', 'Egypt', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-11-02', 'RAKEZ', '-', 'Bachelors', '2 Months', '', 'Inactive', 'user', '2024-01-25 12:30:00'),
-(43, 'Marisa', 'Bialas', 'Female', '542040029', 'info@bialasimmobilien.com', 'U2FsdGVkX19pdyQe/HK/6aSpn5Pc/rsDMnWfW5uUurQ=', '-----', 'RAK - Al Hamra', '', '1982-07-17', '/files/Screenshot 2024-01-25 163527.png', 'Single', 'German', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-12-19', 'RAKEZ', '-', 'Bachelors in finance', '0 Months', '', 'Inactive', 'user', '2024-01-25 12:35:59'),
-(44, 'Ruan', 'Longfei', 'Male', '585301187', 'ruan@the1properties.com', 'U2FsdGVkX18DBWZ7DgXB259dwmXMlIlK0rqJTkqi+Ts=', '----', 'China', '', '1990-12-10', '/files/PHOTO.jpeg', 'Single', 'China', 'Proprty Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2022-12-25', 'RAKEZ', '-', 'High School', '0 Months', '', 'Inactive', 'user', '2024-01-25 12:39:18'),
-(45, 'Shadi', 'Humeid', 'Male', '971504243584', 'shadi@gmail.com', 'U2FsdGVkX1+iz7tEZGC6yNHZwo+BTJrMdefS14PJ8Vc=', '----', 'RAK', '', '1980-05-09', '/files/Passport Size Picture.jpeg', 'Married', 'Jordan', 'Sales Manager', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2023-02-01', 'RAKEZ', '7000', 'High School', '0 Months', '', 'Inactive', 'user', '2024-01-26 07:57:06'),
-(46, 'Jamal Saoud Sabil', 'Kashmir', 'Male', '0565996751', 'jamal@the1proprties.com', 'U2FsdGVkX18kY1w7bNcxqmbCcTiHbdhHBqSRAeywUUI=', '784-2002-8132415-0', 'RAK', '', '2002-05-26', '/files/DSC_0388.jpg', 'Single', 'Comoros', 'High School', 'Sales', 'Karen', 'Full Time', '2023-03-16', 'Julphar', '0', 'High School', '4 Months', '', 'Inactive', 'user', '2024-01-26 08:36:15'),
-(47, 'Asiaunisa', 'Begum', 'Female', '971505978824', 'admin@the1proprties.com', 'U2FsdGVkX1/MIDY8LRdJ33yDomcnuoKqbq41bB+xhfs=', '784-1963-6497204-0', 'RAK', '', '1970-01-07', '/files/2643a.JPG', 'Married', 'India', 'Admin', 'Admin', 'Abdulrazzaq Tufail', 'Full Time', '2023-05-01', 'RAKEZ', '0', 'High School', '0', '', 'Inactive', 'user', '2024-01-26 08:40:30'),
-(48, 'Justine', 'Smith', 'Female', '971547112827', 'justine@the1proprties.com', 'U2FsdGVkX1/b3KBeIKyo2RWR7G54Im3tgZ89IP9rz0Y=', '784-1976-7142140-8', 'RAK', '', '1976-06-14', '/files/Screenshot 2024-01-26 124500.png', 'Single', 'UK', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2023-05-29', 'RAKEZ', '0', 'Bachelors of art', '3 Months', '', 'Inactive', 'user', '2024-01-26 08:45:39'),
-(49, 'Shibel Ali', 'Hasan', 'Male', '971527941958', 'shibel@the1proprties.com', 'U2FsdGVkX199O19f3EyIekjccK4jtfsXzaDyE2g7n00=', '784-1973-4274793-4', 'RAK', '', '1973-11-09', '/files/Screenshot 2024-01-26 125041.png', 'Single', 'United States of America', 'Property Consultant', 'Sales', 'Mostafa Haziim', 'Full Time', '2023-08-01', 'RAKEZ', '0', 'High School', '2 Months', '', 'Inactive', 'user', '2024-01-26 08:51:10'),
-(50, 'Enas Abdelrahman', 'Mohamed Hasouba', 'Female', '507975990', 'enas@the1proprties.com', 'U2FsdGVkX1+4UI1aj9W/0VKPfpPrVtEyBSOfnqkeFQ4=', '784-1980-7627598-5', 'RAK', '', '1980-08-20', '/files/Screenshot 2024-01-26 125520.png', 'Single', 'Egypt', 'Property Consultant', 'Sales', 'Karen', 'Full Time', '2023-07-03', 'RAKEZ', '0', 'High School', '0', '', 'Inactive', 'user', '2024-01-26 08:56:28'),
-(51, 'Karen Lorraine', 'Starr', 'Female', '508033778', 'karen@the1proprties.com', 'U2FsdGVkX18mkp09pwECsZbtpnz2anzEQJWgfw08on4=', '784-1968-1598587-2', 'RAK', '', '1970-07-10', '/files/Screenshot 2024-01-26 135735.png', 'Married', 'CANADA', 'Property Consultant', 'Sales', 'Mostafa Haziim', 'Full Time', '2022-08-01', 'RAKEZ', '0', 'High School', '1 year 3 months', '', 'Inactive', 'user', '2024-01-26 09:59:07'),
-(52, 'Lubomir', 'Michnik', 'Male', '971509229162', 'lubomir@the1proprties.com', 'U2FsdGVkX1+auUlSQ/V7TSbN1VZLeyH5gwb0LYt3/mo=', '784-1976-3591215-3', 'RAK', '', '1976-02-05', '/files/Screenshot 2024-01-26 115605.png', 'Married', 'Slovakia', 'Property Consultant', 'Sales', 'Mostafa Haziim', 'Full Time', '2023-01-17', 'RAKEZ', '8 Months', 'High School', '2 Months', '', 'Inactive', 'user', '2024-01-26 10:03:55'),
-(53, 'Reem Gaber Ahmed', 'Hassan', 'Female', '544332467', 'reem@the1proprties.com', 'U2FsdGVkX18rsM7L+lpiazOjSyHctNbLbBMAk6gj4Gk=', '784-1978-635692-2', 'RAK', '', '1978-01-14', '/files/Screenshot 2024-01-26 140803.png', 'Single', 'Egypy', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2023-09-13', 'RAKEZ', '0', 'High School', '2 Months', '', 'Inactive', 'user', '2024-01-26 10:10:05'),
-(54, 'Syed Adel Pasha Syed', 'Kamaal Pasha', 'Male', '0561788720', 'adelpasha97@gmail.com', 'U2FsdGVkX1/FUtNAvIeVkdyr19I61KVZcKlpyyD3NYM=', '784-1997-9586940-5', 'RAK', '', '1997-06-09', '/files/Screenshot 2024-01-26 141356.png', 'Single', 'India', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2023-10-18', 'RAKEZ', '0', 'High School', '-', '', 'Inactive', 'user', '2024-01-26 10:14:24'),
-(55, 'Amir Khan Said', 'Habib', 'Male', '0506905051', 'amir@the1properties.com', 'U2FsdGVkX1+G0FNZc+Yzrk+YEb1vDzjmmYsVLoV+28Y=', '784-1989-5703647-2', 'RAK', '', '1989-02-05', '/files/Screenshot 2024-01-26 141722.png', 'Married', 'Pakistan', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2023-11-07', 'RAKEZ', '-', 'High School', '1 Month', '', 'Inactive', 'user', '2024-01-26 10:17:50'),
-(56, 'Anna', 'Selifonova', 'Female', '528306919', 'anna@the1properties.com', 'U2FsdGVkX1/HJfEOHEV/ddJv1SzHU6n/3SQM5Jwo7x0=', '784-1987-5596853-8', 'RAK', '', '1987-09-08', '/files/Screenshot 2024-01-26 165953.png', 'Single', 'Russian', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2023-07-15', 'RAKEZ', '-', 'High School', '0', '', 'Active', 'user', '2024-01-26 13:00:15'),
-(57, 'Roshdi Ghassan', 'Rahed Almufleh', 'Male', '0568838860', 'roshdi@the1properties.com', 'U2FsdGVkX1+Ulv34cMbg2we92OP5jENNzvvbJGCBcd0=', '784-2001-8637326-0', 'RAK', '', '2001-11-21', '/files/Screenshot 2024-01-26 170447.png', 'Single', 'Jordan', 'Property Consultant', 'Sales', 'Abdulrazzaq Tufail', 'Full Time', '2024-01-26', 'RAKEZ', '-', 'Bachelors of Business in human resources', '8 Months', '', 'Active', 'user', '2024-01-26 13:05:25');
+INSERT INTO `physical_assets` (`assetId`, `title`, `description`, `employeeId`, `serialNo`, `status`, `companyId`, `createAt`, `modifiedAt`) VALUES
+(1, 'Test Assets', 'asdfasdfasdf', 1, 'asdf', 'Available', 1, '2024-04-04 11:12:16', '2024-04-04 16:16:58'),
+(3, 'Mobile Phone', '', 1, '123edfghjmjk', 'Available', 1, '2024-04-29 12:05:25', '2024-04-29 12:05:25'),
+(4, 'Macbook Pro', '', 2, 'A2141', 'Available', 1, '2024-04-29 12:34:10', '2024-04-29 12:34:10');
 
 -- --------------------------------------------------------
 
@@ -46274,7 +46135,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`userId`, `displayName`, `imageUrl`, `email`, `password`, `employeeId`, `roleId`, `companyId`, `otp`, `otpExpireAt`, `lastLoginAt`, `lastPassword`, `status`, `createAt`, `modifiedAt`) VALUES
-(4, 'Abdul Rehman', '87874212848878.jpg', 'mr.abdulrehman.ar@gmail.com', 'U2FsdGVkX19eg2eFX9e4BR/N9MFixBYbpqRmV3w3w4Y=', NULL, 2, 1, '893807', '2024-02-26 12:52:24', NULL, 'U2FsdGVkX1+JIRXKP071wU5wI2sMzGcGZ3DqzpWR0w5FoYdjfNe6X/1ze4pFaywUziiAbAJcz1FGrRMckEkUxA==', 1, '2024-02-24 12:21:19', '2024-03-19 10:28:19');
+(4, 'Abdul Rehman', '87874212848878.jpg', 'mr.abdulrehman.ar@gmail.com', 'U2FsdGVkX19eg2eFX9e4BR/N9MFixBYbpqRmV3w3w4Y=', NULL, 2, 1, '893807', '2024-02-26 12:52:24', NULL, 'U2FsdGVkX1+JIRXKP071wU5wI2sMzGcGZ3DqzpWR0w5FoYdjfNe6X/1ze4pFaywUziiAbAJcz1FGrRMckEkUxA==', 1, '2024-02-24 12:21:19', '2024-03-19 10:28:19'),
+(5, 'Abdul Rehman', 'f15ac7812fb744bb841745b82a50ba16.jpg', 'abc@gmail.com', 'U2FsdGVkX186KLoeQBHuBDiFZk1AaNmfGo0csOLDSw8=', 1, 1, 1, NULL, NULL, NULL, 'U2FsdGVkX197UpteZz9oa8Tkb++arIHz3F9qYkeLn0Q=', 1, '2024-04-04 07:29:04', '2024-04-04 07:29:04'),
+(6, 'Ali Raza', 'cnic.jpg', 'akchuhdery47@gmail.com', 'U2FsdGVkX1+A/iNs28UXB7Be+9dHKur2d9lC54tZR9E=', 2, 1, 1, NULL, NULL, NULL, 'U2FsdGVkX1+Yj73hTD+Da6f08CIKQ2GXvlXVLzD9+oQ=', 1, '2024-04-29 11:41:49', '2024-04-29 11:41:49');
 
 -- --------------------------------------------------------
 
@@ -46298,8 +46161,50 @@ CREATE TABLE `user_roles` (
 
 INSERT INTO `user_roles` (`roleId`, `role`, `permissions`, `companyId`, `description`, `createAt`, `modifiedAt`) VALUES
 (1, 'Employee', '', 1, '', '2024-02-14 00:00:00', '2024-02-14 00:00:00'),
-(2, 'Admin', '{\"canEditCompany\": true}', 1, '', '2024-02-14 00:00:00', '2024-02-14 00:00:00'),
+(2, 'Admin', '{\"canCreateCompany\":false,\"canEditCompany\":true,\"canDeleteCompany\":false,\"canCreateOffice\":true,\"canEditOffice\":true,\"canDeleteOffice\":true,\"canViewAllOffices\":true,\"canCreateDepartment\":true,\"canEditDepartment\":true,\"canDeleteDepartment\":true,\"canViewAllDepartments\":true,\"canCreateEmployee\":true,\"canEditEmployeeGeneralInfo\":true,\"canEditEmployeeIdentityInfo\":true,\"canDeleteEmployee\":true,\"canViewAllEmployees\":true,\"canManageEmployeeProbationInfo\":true,\"canManageEmployeePayroll\":true,\"canManageEmployeeOffBoardInfo\":true,\"canManageEmployeeLeaveRequest\":true,\"canManageEmployeeJobTimeline\":true,\"canManageEmployeeEmergencyContacts\":true,\"canManageEmployeeDocuments\":true,\"canManageEmployeeDependants\":true,\"canManageEmployeeBenefits\":true,\"canManageEmployeeSalaryTimeline\":true,\"canManageEmployeeBankInfo\":true,\"canManageUsers\":true,\"canManageUserRoles\":true,\"canManagePhysicalAssets\":true,\"canManageLeaveTypes\":true,\"canManageJobTitles\":true,\"canManageDigitalAssets\":true,\"canManageCommonFolder\":true,\"canManageAnnouncements\":true,\"canMarkEmployeeAttendance\":true,\"viewLevel\":\"Company\"}', 1, '', '2024-02-14 00:00:00', '2024-02-14 00:00:00'),
 (3, 'CEO', '', 1, '', '2024-02-14 00:00:00', '2024-02-14 00:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `visaTypes`
+--
+
+CREATE TABLE `visaTypes` (
+  `id` int(11) NOT NULL,
+  `type` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `visaTypes`
+--
+
+INSERT INTO `visaTypes` (`id`, `type`) VALUES
+(1, 'Tourist Visa'),
+(2, 'Business Visa'),
+(3, 'Transit Visa'),
+(4, 'Family Visit Visa'),
+(5, 'Medical Visa'),
+(6, 'Temporary Work Visa'),
+(7, 'Skilled Worker Visa'),
+(8, 'Seasonal Work Visa'),
+(9, 'Intra-Company Transfer Visa'),
+(10, 'Entrepreneur/Startup Visa'),
+(11, 'Freelancer Visa'),
+(12, 'Student Visa'),
+(13, 'Exchange Student Visa'),
+(14, 'Research Visa'),
+(15, 'Spouse/Partner Visa'),
+(16, 'Parent Visa'),
+(17, 'Child Visa'),
+(18, 'Diplomatic Visa'),
+(19, 'Refugee/Asylum Visa'),
+(20, 'Artist/Entertainer Visa'),
+(21, 'Religious Worker Visa'),
+(22, 'Journalist/Media Visa'),
+(23, 'Schengen Visa'),
+(24, 'Working Holiday Visa'),
+(25, 'Retirement Visa');
 
 --
 -- Indexes for dumped tables
@@ -46327,9 +46232,13 @@ ALTER TABLE `common_folder`
 -- Indexes for table `companies`
 --
 ALTER TABLE `companies`
-  ADD PRIMARY KEY (`companyId`),
-  ADD UNIQUE KEY `email_UNIQUE` (`email`) USING HASH,
-  ADD UNIQUE KEY `name_UNIQUE` (`name`) USING HASH;
+  ADD PRIMARY KEY (`companyId`);
+
+--
+-- Indexes for table `currencies`
+--
+ALTER TABLE `currencies`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `departments`
@@ -46344,18 +46253,10 @@ ALTER TABLE `digital_assets`
   ADD PRIMARY KEY (`assetId`);
 
 --
--- Indexes for table `docs`
---
-ALTER TABLE `docs`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `employees`
 --
 ALTER TABLE `employees`
-  ADD PRIMARY KEY (`employeeId`),
-  ADD UNIQUE KEY `email_UNIQUE` (`email`) USING HASH,
-  ADD UNIQUE KEY `mobile_UNIQUE` (`mobile`) USING HASH;
+  ADD PRIMARY KEY (`employeeId`);
 
 --
 -- Indexes for table `employee_attendance`
@@ -46367,15 +46268,12 @@ ALTER TABLE `employee_attendance`
 -- Indexes for table `employee_bank_info`
 --
 ALTER TABLE `employee_bank_info`
-  ADD PRIMARY KEY (`bankId`),
-  ADD UNIQUE KEY `accountNumber_UNIQUE` (`accountNumber`) USING HASH,
-  ADD UNIQUE KEY `iban_UNIQUE` (`iban`) USING HASH,
-  ADD KEY `employee_id_bank_idx` (`employeeId`);
+  ADD PRIMARY KEY (`bankId`);
 
 --
--- Indexes for table `employee_benefit`
+-- Indexes for table `employee_benefits`
 --
-ALTER TABLE `employee_benefit`
+ALTER TABLE `employee_benefits`
   ADD PRIMARY KEY (`benefitId`);
 
 --
@@ -46394,8 +46292,7 @@ ALTER TABLE `employee_documents`
 -- Indexes for table `employee_emergency_contacts`
 --
 ALTER TABLE `employee_emergency_contacts`
-  ADD PRIMARY KEY (`contactId`),
-  ADD UNIQUE KEY `phone_UNIQUE` (`phone`) USING HASH;
+  ADD PRIMARY KEY (`contactId`);
 
 --
 -- Indexes for table `employee_job_info`
@@ -46419,7 +46316,7 @@ ALTER TABLE `employee_offboard_info`
 -- Indexes for table `employee_payroll_info`
 --
 ALTER TABLE `employee_payroll_info`
-  ADD PRIMARY KEY (`ipayrollId`);
+  ADD PRIMARY KEY (`payrollId`);
 
 --
 -- Indexes for table `employee_probation_info`
@@ -46449,8 +46346,7 @@ ALTER TABLE `leave_types`
 -- Indexes for table `nationalities`
 --
 ALTER TABLE `nationalities`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `nationality_UNIQUE` (`nationality`) USING HASH;
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `notifications`
@@ -46465,24 +46361,22 @@ ALTER TABLE `offices`
   ADD PRIMARY KEY (`officeId`);
 
 --
+-- Indexes for table `payment_methods`
+--
+ALTER TABLE `payment_methods`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `physical_assets`
 --
 ALTER TABLE `physical_assets`
   ADD PRIMARY KEY (`assetId`);
 
 --
--- Indexes for table `staff`
---
-ALTER TABLE `staff`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `tickets`
 --
 ALTER TABLE `tickets`
-  ADD PRIMARY KEY (`ticketId`),
-  ADD KEY `create_by_idx` (`createdBy`),
-  ADD KEY `assigned_to_idx` (`assignedTo`);
+  ADD PRIMARY KEY (`ticketId`);
 
 --
 -- Indexes for table `timezones`
@@ -46500,8 +46394,13 @@ ALTER TABLE `users`
 -- Indexes for table `user_roles`
 --
 ALTER TABLE `user_roles`
-  ADD PRIMARY KEY (`roleId`),
-  ADD KEY `roleCompId_idx` (`companyId`);
+  ADD PRIMARY KEY (`roleId`);
+
+--
+-- Indexes for table `visaTypes`
+--
+ALTER TABLE `visaTypes`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -46511,97 +46410,91 @@ ALTER TABLE `user_roles`
 -- AUTO_INCREMENT for table `announcements`
 --
 ALTER TABLE `announcements`
-  MODIFY `announcementId` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `cities`
---
-ALTER TABLE `cities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46797;
+  MODIFY `announcementId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `common_folder`
 --
 ALTER TABLE `common_folder`
-  MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `companies`
 --
 ALTER TABLE `companies`
-  MODIFY `companyId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `companyId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `currencies`
+--
+ALTER TABLE `currencies`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `departmentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `departmentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `digital_assets`
 --
 ALTER TABLE `digital_assets`
-  MODIFY `assetId` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `docs`
---
-ALTER TABLE `docs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=244;
+  MODIFY `assetId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `employeeId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `employeeId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `employee_attendance`
 --
 ALTER TABLE `employee_attendance`
-  MODIFY `attendanceId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `attendanceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `employee_bank_info`
 --
 ALTER TABLE `employee_bank_info`
-  MODIFY `bankId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `bankId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `employee_benefit`
+-- AUTO_INCREMENT for table `employee_benefits`
 --
-ALTER TABLE `employee_benefit`
-  MODIFY `benefitId` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `employee_benefits`
+  MODIFY `benefitId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `employee_dependants`
 --
 ALTER TABLE `employee_dependants`
-  MODIFY `dependantId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `dependantId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `employee_documents`
 --
 ALTER TABLE `employee_documents`
-  MODIFY `documentId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `documentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `employee_emergency_contacts`
 --
 ALTER TABLE `employee_emergency_contacts`
-  MODIFY `contactId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `contactId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `employee_job_info`
 --
 ALTER TABLE `employee_job_info`
-  MODIFY `jobInfoId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `jobInfoId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `employee_leave_requests`
 --
 ALTER TABLE `employee_leave_requests`
-  MODIFY `leaveId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `leaveId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `employee_offboard_info`
@@ -46613,13 +46506,19 @@ ALTER TABLE `employee_offboard_info`
 -- AUTO_INCREMENT for table `employee_payroll_info`
 --
 ALTER TABLE `employee_payroll_info`
-  MODIFY `ipayrollId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `payrollId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `employee_probation_info`
+--
+ALTER TABLE `employee_probation_info`
+  MODIFY `probationId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `employee_salary_info`
 --
 ALTER TABLE `employee_salary_info`
-  MODIFY `salaryId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `salaryId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `job_titles`
@@ -46652,16 +46551,16 @@ ALTER TABLE `offices`
   MODIFY `officeId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
+-- AUTO_INCREMENT for table `payment_methods`
+--
+ALTER TABLE `payment_methods`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
 -- AUTO_INCREMENT for table `physical_assets`
 --
 ALTER TABLE `physical_assets`
-  MODIFY `assetId` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `staff`
---
-ALTER TABLE `staff`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `assetId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tickets`
@@ -46679,7 +46578,7 @@ ALTER TABLE `timezones`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `user_roles`
@@ -46688,15 +46587,10 @@ ALTER TABLE `user_roles`
   MODIFY `roleId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- Constraints for dumped tables
+-- AUTO_INCREMENT for table `visaTypes`
 --
-
---
--- Constraints for table `tickets`
---
-ALTER TABLE `tickets`
-  ADD CONSTRAINT `assigned_to` FOREIGN KEY (`assignedTo`) REFERENCES `employees` (`employeeId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `create_by` FOREIGN KEY (`createdBy`) REFERENCES `employees` (`employeeId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `visaTypes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
