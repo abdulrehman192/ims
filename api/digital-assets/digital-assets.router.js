@@ -2,7 +2,6 @@ const { createAsset, updateAsset, deleteAsset, getAssets } = require("./digital-
 
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
-const fs = require('fs');
 
 
 router.post("/create-digital-asset" , checkToken, createAsset);

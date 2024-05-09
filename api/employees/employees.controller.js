@@ -1014,6 +1014,7 @@ module.exports = {
         getAllEmployees(body, (error, results) =>{
         if(error)
             {
+                console.log(error);
                 return response.status(500).json({
                     success : false,
                     message : "failed to get all employees data",

@@ -34,6 +34,36 @@ class SFTPUploader {
     }
   }
 
+  
+ uploadFileOverSSH = (req, res, next) => {
+    if (req.files && req.files.length > 0) {
+        const uploadedFiles = req.files;
+        uploadedFiles.forEach(async(file) => {
+            const originalName = file.originalname;
+            let remoteFilePath = originalName;
+  
+            if (req.query[file.fieldname]) {
+                remoteFilePath = req.query[file.fieldname];
+            }
+            
+            console.log(remoteFilePath);
+            req[file.fieldname] = remoteFilePath;
+          
+            // Pipe the read stream directly to the SFTP upload stream
+            await this.uploadFile(file.buffer, remoteFilePath, (err) => {
+              if (err) {
+                  console.error('Error uploading file over SSH :', err);
+                  next();
+              }
+          });
+  
+        });
+    }
+  
+    next();
+  }
+
+
   async connect() {
     try {
       await sftp.connect(this.config);

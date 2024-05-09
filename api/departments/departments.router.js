@@ -2,7 +2,7 @@ const { createDepartment, updateDepartment, deleteDepartment, getOfficeDepartmen
 
 const router = require("express").Router();
 const { checkToken } = require("../../auth/validation-token");
-const fs = require('fs');
+
 
 
 router.post("/create-office-department" , checkToken, createDepartment);
