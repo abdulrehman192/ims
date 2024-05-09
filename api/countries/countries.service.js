@@ -5,6 +5,7 @@ module.exports = {
         pool.query(`SELECT * FROM timezones group by country`, [], (error, results) => {
             if(error)
             {
+                console.log(error);
                 return callback(error);
             }
             else
