@@ -3,7 +3,7 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require('body-parser');
-// const multer = require('multer');
+const multer = require('multer');
 const cors = require('cors');
 
 
@@ -25,7 +25,7 @@ app.use(cors());
 
 // app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }))
-// app.use(multer().any());
+app.use(multer().any());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
